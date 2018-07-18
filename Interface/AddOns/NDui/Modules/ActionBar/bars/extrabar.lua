@@ -12,7 +12,6 @@ function Bar:CreateExtrabar()
 	local frame = CreateFrame("Frame", "NDui_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(num*cfg.size + (num-1)*margin + 2*padding)
 	frame:SetHeight(cfg.size + 2*padding)
-	--frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 250, 100}
 	frame.Pos = {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 410, 145}
 	frame:SetScale(cfg.scale)
 

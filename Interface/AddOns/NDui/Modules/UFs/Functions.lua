@@ -836,10 +836,8 @@ function UF:CreateFCT(self)
 	local fcf = CreateFrame("Frame", "oUF_CombatTextFrame", parentFrame)
 	fcf:SetSize(32, 32)
 	if self.mystyle == "player" then
-		--B.Mover(fcf, L["CombatText"], "PlayerCombatText", {"BOTTOM", self, "TOPLEFT", 0, 120})
 		B.Mover(fcf, L["CombatText"], "PlayerCombatText", {"CENTER", self, "CENTER", -280, -75})
 	else
-		--B.Mover(fcf, L["CombatText"], "TargetCombatText", {"BOTTOM", self, "TOPRIGHT", 0, 120})
 		B.Mover(fcf, L["CombatText"], "TargetCombatText", {"CENTER", self, "CENTER", 280, -75})
 	end
 
