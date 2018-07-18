@@ -601,7 +601,14 @@ local function CreatePanel()
 		tabs[i]:SetScript("OnEnter", tabOnEnter)
 		tabs[i]:SetScript("OnLeave", tabOnLeave)
 	end
-
+	-- init AuraWatchListSwitcher
+	local function initAuraWatchListSwitcher()
+		for i ,index in ipairs({1,3,5,7,8,9,10}) do
+			NDuiDB["AuraWatchList"]["Switcher"..index] = true
+		end
+	end
+	initAuraWatchListSwitcher()
+	
 	for i = 1, 10 do
 		CreateGroupSwitcher(tabs[i].Page, i)
 	end

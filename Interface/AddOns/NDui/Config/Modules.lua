@@ -17,33 +17,51 @@ C.Auras = {
 	StatuePos		= {"TOPRIGHT", UIParent, "BOTTOM", -460, 300},		-- 武僧雕像默认位置
 
 	-- 技能监控各组初始位置
-	PlayerAuraPos	= {"BOTTOMRIGHT", UIParent, "BOTTOM", -200, 309},	-- 玩家光环分组
-	TargetAuraPos 	= {"BOTTOMLEFT", UIParent, "BOTTOM", 200, 309},		-- 目标光环分组
-	SpecialPos		= {"BOTTOMRIGHT", UIParent, "BOTTOM", -200, 336},	-- 玩家重要光环分组
-	FocusPos		= {"BOTTOMLEFT", UIParent, "LEFT", 5, -130},		-- 焦点光环分组
-	CDPos			= {"BOTTOMRIGHT", UIParent, "BOTTOM", -425, 500},	-- 冷却计时分组
-	EnchantPos		= {"BOTTOMRIGHT", UIParent, "BOTTOM", -200, 377},	-- 附魔及饰品分组
-	RaidBuffPos		= {"CENTER", UIParent, "CENTER", -220, 200},		-- 团队增益分组
-	RaidDebuffPos	= {"CENTER", UIParent, "CENTER", 220, 200},			-- 团队减益分组
-	WarningPos		= {"BOTTOMLEFT", UIParent, "BOTTOM", 200, 370},		-- 目标重要光环分组
-	InternalPos		= {"BOTTOMRIGHT", UIParent, "BOTTOM", -425, 125},	-- 法术内置冷却分组
+	--PlayerAuraPos	= {"BOTTOMRIGHT", UIParent, "BOTTOM", -200, 309},	-- 玩家光环分组
+	PlayerAuraPos	= {"CENTER", UIParent, "CENTER", -135, -125},	-- 玩家光环分组
+	--TargetAuraPos 	= {"BOTTOMLEFT", UIParent, "BOTTOM", 200, 309},		-- 目标光环分组
+	TargetAuraPos 	= {"CENTER", UIParent, "CENTER", 135, -125},		-- 目标光环分组
+	--SpecialPos		= {"TOPLEFT", UIParent, "TOPLEFT", 8, -155},	-- 玩家重要光环分组
+	SpecialPos		= {"BOTTOM", UIParent, "BOTTOM", -140, 280},
+	--FocusPos		= {"BOTTOMLEFT", UIParent, "LEFT", 5, -130},		-- 焦点光环分组
+	FocusPos		= {"CENTER", UIParent, "CENTER", 270, 225},		-- 焦点光环分组
+	--CDPos			= {"BOTTOMRIGHT", UIParent, "BOTTOM", -425, 500},	-- 冷却计时分组
+	CDPos			= {"TOP", UIParent, "TOP", -490, -5},	-- 冷却计时分组
+	--EnchantPos		= {"BOTTOMRIGHT", UIParent, "BOTTOM", -200, 377},	-- 附魔及饰品分组
+	EnchantPos		= {"TOP", UIParent, "TOP", -180, -285},	-- 附魔及饰品分组
+	RaidBuffPos		= {"CENTER", UIParent, "CENTER", -220, 240},		-- 团队增益分组
+	RaidDebuffPos	= {"CENTER", UIParent, "CENTER", 220, 240},			-- 团队减益分组
+	--WarningPos		= {"TOP", UIParent, "TOP", -443, -5},		-- 目标重要光环分组
+	WarningPos		= {"BOTTOM", UIParent, "BOTTOM", 140, 280},		-- 目标重要光环分组
+	--InternalPos		= {"BOTTOMRIGHT", UIParent, "BOTTOM", -425, 125},	-- 法术内置冷却分组
+	InternalPos		= {"BOTTOM", UIParent, "BOTTOM", 440, 30},	-- 法术内置冷却分组
 }
 
 -- 头像相关
 C.UFs = {
-	Playercb		= {"BOTTOM", UIParent, "BOTTOM", 16, 175},			-- 玩家施法条默认位置
+	--Playercb		= {"BOTTOM", UIParent, "BOTTOM", 16, 175},			-- 玩家施法条默认位置
+	Playercb		= {"BOTTOM", UIParent, "BOTTOM", -4, 142},			-- 玩家施法条默认位置
 	PlayercbSize	= {300, 20},										-- 玩家施法条尺寸
-	Targetcb		= {"BOTTOM", UIParent, "BOTTOM", 16, 335},			-- 目标施法条默认位置
+	--Targetcb		= {"BOTTOM", UIParent, "BOTTOM", 16, 335},			-- 目标施法条默认位置
+	Targetcb		= {"CENTER", UIParent, "CENTER", 6, 240},			-- 目标施法条默认位置
 	TargetcbSize	= {280, 20},										-- 目标施法条尺寸
-	Focuscb			= {"CENTER", UIParent, "CENTER", 10, 200},			-- 焦点施法条默认位置
-	FocuscbSize		= {320, 20},										-- 焦点施法条尺寸
+	--Focuscb			= {"CENTER", UIParent, "CENTER", 10, 200},			-- 焦点施法条默认位置
+	Focuscb			= {"CENTER", UIParent, "CENTER", 350, 195},			-- 焦点施法条默认位置
+	--FocuscbSize		= {320, 20},										-- 焦点施法条尺寸
+	FocuscbSize		= {200, 20},										-- 焦点施法条尺寸
 
-	PlayerPos		= {"TOPRIGHT", UIParent, "BOTTOM", -200, 300},		-- 玩家框体默认位置
-	TargetPos		= {"TOPLEFT", UIParent, "BOTTOM", 200, 300},		-- 目标框体默认位置
-	ToTPos			= {"BOTTOM", UIParent, "BOTTOM", 136, 241},			-- 目标的目标框体默认位置
-	PetPos			= {"BOTTOM", UIParent, "BOTTOM", -136, 241},		-- 宠物框体默认位置
-	FocusPos		= {"LEFT", UIParent, "LEFT", 5, -150},				-- 焦点框体默认位置
-	FoTPos			= {"LEFT", UIParent, "LEFT", 210, -150},			-- 焦点目标框体默认位置
+	--PlayerPos		= {"TOPRIGHT", UIParent, "BOTTOM", -200, 300},		-- 玩家框体默认位置
+	PlayerPos		= {"CENTER", UIParent, "CENTER", -239, -195},		-- 玩家框体默认位置
+	--TargetPos		= {"TOPLEFT", UIParent, "BOTTOM", 200, 300},		-- 目标框体默认位置
+	TargetPos		= {"CENTER", UIParent, "CENTER", 239, -195},		-- 目标框体默认位置
+	--ToTPos			= {"BOTTOM", UIParent, "BOTTOM", 136, 241},			-- 目标的目标框体默认位置
+	ToTPos			= {"CENTER", UIParent, "CENTER", 300, -163},			-- 目标的目标框体默认位置
+	--PetPos			= {"BOTTOM", UIParent, "BOTTOM", -136, 241},		-- 宠物框体默认位置
+	PetPos			= {"CENTER", UIParent, "CENTER", -300, -163},		-- 宠物框体默认位置
+	--FocusPos		= {"LEFT", UIParent, "LEFT", 5, -150},				-- 焦点框体默认位置
+	FocusPos		= {"CENTER", UIParent, "CENTER", 350, 170},				-- 焦点框体默认位置
+	--FoTPos			= {"LEFT", UIParent, "LEFT", 210, -150},			-- 焦点目标框体默认位置
+	FoTPos			= {"CENTER", UIParent, "CENTER", 390, 145},			-- 焦点目标框体默认位置
 	PlayerPlate		= {"BOTTOM", UIParent, "BOTTOM", 0, 280},			-- 玩家姓名板默认位置
 
 	BarPoint		= {"TOPLEFT", 12, 4},								-- 资源条位置（以自身头像为基准）

@@ -11,7 +11,7 @@ local defaultSettings = {
 		Classcolor = false,
 		Cooldown = true,
 		DecimalCD = true,
-		Style = 1,
+		Style = 2,
 		Bar4Fade = false,
 		Bar5Fade = true,
 	},
@@ -99,7 +99,7 @@ local defaultSettings = {
 		WhoPings = true,
 	},
 	Nameplate = {
-		Enable = true,
+		Enable = false, -- close NamePlate because EKPlate
 		ColorBorder = false,
 		AllAuras = true,
 		maxAuras = 5,
@@ -183,14 +183,23 @@ local defaultSettings = {
 	},
 	Settings = {
 		LockUIScale = false,
-		UIScale = .8,
+		UIScale = .72,
 		GUIScale = 1,
-		Format = 1,
+		Format = 2,
 		VersionCheck = true,
 	},
 	Tutorial = {
 		Complete = false,
 	},
+	AuraWatchList = {
+		Switcher1 = true,
+		Switcher3 = true,
+		Switcher5 = true,
+		Switcher7 = true,
+		Switcher8 = true,
+		Switcher9 = true,
+		Switcher10 = true,
+	}
 }
 
 local loader = CreateFrame("Frame")

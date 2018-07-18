@@ -4,15 +4,15 @@ local module = B:RegisterModule("AurasTable")
 
 local groups = {
 	-- groups name = direction, interval, mode, iconsize, position, barwidth
-	["Player Aura"] = {"LEFT", 5, "ICON", 22, C.Auras.PlayerAuraPos},
+	["Player Aura"] = {"LEFT", 5, "ICON", 36, C.Auras.PlayerAuraPos},
 	["Target Aura"] = {"RIGHT", 5, "ICON", 36, C.Auras.TargetAuraPos},
-	["Special Aura"] = {"LEFT", 5, "ICON", 36, C.Auras.SpecialPos},
+	["Special Aura"] = {"LEFT", 5, "ICON", 32, C.Auras.SpecialPos}, --玩家重要光环
 	["Focus Aura"] = {"RIGHT", 5, "ICON", 35, C.Auras.FocusPos},
-	["Spell Cooldown"] = {"UP", 5, "BAR", 18, C.Auras.CDPos, 150},
+	["Spell Cooldown"] = {"DOWN", 5, "BAR", 18, C.Auras.CDPos, 150},
 	["Enchant Aura"] = {"LEFT", 5, "ICON", 36, C.Auras.EnchantPos},
 	["Raid Buff"] = {"LEFT", 5, "ICON", 45, C.Auras.RaidBuffPos},
 	["Raid Debuff"] = {"RIGHT", 5, "ICON", 45, C.Auras.RaidDebuffPos},
-	["Warning"] = {"RIGHT", 5, "ICON", 42, C.Auras.WarningPos},
+	["Warning"] = {"RIGHT", 5, "ICON", 32, C.Auras.WarningPos}, -- 目标重要光环
 	["InternalCD"] = {"UP", 5, "BAR", 18, C.Auras.InternalPos, 150},
 }
 

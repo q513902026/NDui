@@ -15,7 +15,8 @@ function Bar:CreateLeaveVehicle()
 	if NDuiDB["Actionbar"]["Style"] == 3 then
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 130}
 	else
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 320, 100}
+		--frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 320, 100}
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -295, 95}
 	end
 	frame:SetScale(cfg.scale)
 

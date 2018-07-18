@@ -194,7 +194,7 @@ local function ForceSkadaOptions()
 						["barfontflags"] = "OUTLINE",
 						["point"] = "BOTTOMRIGHT",
 						["mode"] = "",
-						["barwidth"] = 300,
+						["barwidth"] = 358,
 						["barbgcolor"] = {
 							["a"] = 0,
 							["b"] = 0,
@@ -203,7 +203,7 @@ local function ForceSkadaOptions()
 						},
 						["barfontsize"] = 15,
 						["background"] = {
-							["height"] = 180,
+							["height"] = 178,
 							["texture"] = "None",
 							["bordercolor"] = {
 								["a"] = 0,
