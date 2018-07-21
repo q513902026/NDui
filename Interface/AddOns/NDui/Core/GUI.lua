@@ -75,6 +75,7 @@ local defaultSettings = {
 		ShowTeamIndex = false,
 		ShowPlayerPlate = false,
 		SortRunes = true,
+		AddPower = true,
 	},
 	Chat = {
 		Sticky = false,
@@ -87,6 +88,8 @@ local defaultSettings = {
 		EnableFilter = true,
 		Matches = 1,
 		BlockAddonAlert = true,
+		ChatMenu = true,
+		WhisperColor = true,
 	},
 	Map = {
 		Coord = true,
@@ -99,7 +102,7 @@ local defaultSettings = {
 		WhoPings = true,
 	},
 	Nameplate = {
-		Enable = false, -- close NamePlate because EKPlate
+		Enable = false,
 		ColorBorder = false,
 		AllAuras = true,
 		maxAuras = 5,
@@ -154,6 +157,7 @@ local defaultSettings = {
 		FactionIcon = true,
 		LFDRole = false,
 		TargetBy = true,
+		Scale = 1,
 	},
 	Misc = {
 		Mail = true,
@@ -185,11 +189,8 @@ local defaultSettings = {
 		LockUIScale = false,
 		UIScale = .72,
 		GUIScale = 1,
-		Format = 2,
+		Format = 2
 		VersionCheck = true,
-	},
-	Tutorial = {
-		Complete = false,
 	},
 	AuraWatchList = {
 		Switcher1 = true,
@@ -199,7 +200,10 @@ local defaultSettings = {
 		Switcher8 = true,
 		Switcher9 = true,
 		Switcher10 = true,
-	}
+	},
+	Tutorial = {
+		Complete = false,
+	},
 }
 
 local loader = CreateFrame("Frame")
@@ -289,6 +293,7 @@ local optionList = {		-- type, key, value, name, horizon, doubleline
 		{1, "UFs", "PlayerDebuff", L["Player Debuff"]},
 		{1, "UFs", "ToTAuras", L["ToT Debuff"], true},
 		{1, "UFs", "SortRunes", L["Sort Runes"]},
+		{1, "UFs", "AddPower", L["UFs ExtraMana"], true},
 		{},--blank
 		{1, "UFs", "CombatText", "|cff00cc4c"..L["UFs CombatText"]},
 		{1, "UFs", "HotsDots", L["CombatText HotsDots"]},
@@ -381,13 +386,14 @@ local optionList = {		-- type, key, value, name, horizon, doubleline
 		{1, "Chat", "Freedom", L["Language Filter"]},
 		{1, "Chat", "Sticky", L["Chat Sticky"], true},
 		{1, "Chat", "Oldname", L["Default Channel"]},
+		{1, "Chat", "WhisperColor", L["Differ WhipserColor"], true},
 		{1, "Chat", "Timestamp", L["Timestamp"]},
-		{2, "Chat", "AtList", L["@List"], true, nil, function() B.genChatAtList() end},
 		{},--blank
 		{1, "Chat", "EnableFilter", L["Enable Chatfilter"]},
 		{1, "Chat", "BlockAddonAlert", L["Block Addon Alert"], true},
 		{3, "Chat", "Matches", L["Keyword Match"], false, {1, 3, 0}},
 		{2, "Chat", "FilterList", L["Filter List"], true, nil, function() B.genFilterList() end},
+		{2, "Chat", "AtList", L["@List"], false, nil, function() B.genChatAtList() end},
 	},
 	[9] = {
 		{1, "Map", "Coord", L["Map Coords"]},
@@ -426,6 +432,7 @@ local optionList = {		-- type, key, value, name, horizon, doubleline
 		{1, "Tooltip", "CombatHide", L["Hide Tooltip"]},
 		{1, "Tooltip", "Cursor", L["Follow Cursor"]},
 		{1, "Tooltip", "ClassColor", L["Classcolor Border"], true},
+		{3, "Tooltip", "Scale", L["Tooltip Scale"], false, {.5, 1.5, 1}},
 		{},--blank
 		{1, "Tooltip", "HideTitle", L["Hide Title"]},
 		{1, "Tooltip", "HideRealm", L["Hide Realm"], true},
@@ -663,15 +670,21 @@ local function OpenGUI()
 	close:SetFrameLevel(3)
 	close:SetScript("OnClick", function() f:Hide() end)
 
+	local scaleOld = NDuiDB["Settings"]["UIScale"]
 	local ok = B.CreateButton(f, 80, 20, OKAY)
 	ok:SetPoint("RIGHT", close, "LEFT", -10, 0)
 	ok:SetFrameLevel(3)
 	ok:SetScript("OnClick", function()
 		local scale = NDuiDB["Settings"]["UIScale"]
-		if scale < .64 then
-			UIParent:SetScale(scale)
-		else
-			SetCVar("uiScale", scale)
+		if scale ~= scaleOld then
+			if scale < .64 then
+				UIParent:SetScale(scale)
+			else
+				SetCVar("uiScale", scale)
+			end
+			if NDuiDB["Chat"]["Lock"] then
+				ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 28)
+			end
 		end
 		f:Hide()
 		StaticPopup_Show("RELOAD_NDUI")

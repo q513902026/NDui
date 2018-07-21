@@ -20,12 +20,12 @@ local function CreatePlayerStyle(self)
 	UF:CreatePrediction(self)
 	UF:CreateFCT(self)
 	UF:CreateMirrorBar()
-	UF:CreateAddPower(self)
 
 	if not NDuiDB["Nameplate"]["Enable"] or not NDuiDB["Nameplate"]["ShowPlayerPlate"] then UF:CreateClassPower(self) end
 	if not NDuiDB["Misc"]["ExpRep"] then UF:CreateExpRepBar(self) end
 	if NDuiDB["UFs"]["PlayerDebuff"] then UF:CreateDebuffs(self) end
 	if NDuiDB["UFs"]["SwingBar"] then UF:CreateSwing(self) end
+	if NDuiDB["UFs"]["AddPower"] then UF:CreateAddPower(self) end
 end
 
 local function CreateTargetStyle(self)
@@ -395,7 +395,7 @@ function UF:OnLogin()
 			if not NDuiDB["UFs"]["SpecRaidPos"] then return end
 
 			local function UpdateSpecPos(event, ...)
-				local unit, _, _, _, spellID = ...
+				local unit, _, spellID = ...
 				if (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player" and spellID == 200749) or event == "PLAYER_ENTERING_WORLD" then
 					if not GetSpecialization() then return end
 					local specIndex = GetSpecialization()
