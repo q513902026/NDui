@@ -13,7 +13,7 @@ function Bar:CreateExtrabar()
 	frame:SetWidth(num*cfg.size + (num-1)*margin + 2*padding)
 	frame:SetHeight(cfg.size + 2*padding)
 	frame.Pos = {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 410, 145}
-	frame:SetScale(cfg.scale)
+	frame:SetScale(NDuiDB["Actionbar"]["Scale"])
 
 	--move the buttons into position and reparent them
 	ExtraActionBarFrame:SetParent(frame)
@@ -40,4 +40,16 @@ function Bar:CreateExtrabar()
 	if cfg.fader then
 		B.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
+
+	--zone ability
+	ZoneAbilityFrame:ClearAllPoints()
+	ZoneAbilityFrame.ignoreFramePositionManager = true
+	ZoneAbilityFrameNormalTexture:SetAlpha(0)
+	B.Mover(ZoneAbilityFrame, L["Zone Ability"], "ZoneAbility",  {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 410, 145}, 64, 64)
+
+	local spellButton = ZoneAbilityFrame.SpellButton
+	spellButton.Style:SetAlpha(0)
+	spellButton.Icon:SetTexCoord(.08, .92, .08, .92)
+	spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+	B.CreateSD(spellButton.Icon, 3, 3)
 end

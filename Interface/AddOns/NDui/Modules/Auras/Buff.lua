@@ -28,12 +28,7 @@ function module:OnLogin()
 	BuffFrame.ignoreFramePositionManager = true
 
 	-- Elements
-	if DB.MyClass == "DEATHKNIGHT" then
-		self:BloodyHell()
-	elseif DB.MyClass == "HUNTER" then
-		self:HunterTool()
-	elseif DB.MyClass == "MONK" then
-		self:Stagger()
+	if DB.MyClass == "MONK" then
 		self:MonkStatue()
 	elseif DB.MyClass == "SHAMAN" then
 		self:Totems()
@@ -69,7 +64,7 @@ local function styleButton(bu, isDebuff)
 
 	bu:SetSize(iconSize, iconSize)
 	bu.HL = bu:CreateTexture(nil, "HIGHLIGHT")
-	bu.HL:SetColorTexture(1, 1, 1, .3)
+	bu.HL:SetColorTexture(1, 1, 1, .25)
 	bu.HL:SetAllPoints(icon)
 	B.CreateSD(bu, 3, 3)
 

@@ -12,8 +12,8 @@ local framesToHide = {
 
 local framesToDisable = {
 	MainMenuBar,
-	ActionBarDownButton, ActionBarUpButton, MainMenuBarVehicleLeaveButton, ExhaustionTick,
-	ReputationWatchBar, ArtifactWatchBar, HonorWatchBar, MainMenuExpBar, MainMenuBarMaxLevelBar,
+	MicroButtonAndBagsBar, MainMenuBarArtFrame, StatusTrackingBarManager,
+	ActionBarDownButton, ActionBarUpButton, MainMenuBarVehicleLeaveButton,
 	OverrideActionBar,
 	OverrideActionBarExpBar, OverrideActionBarHealthBar, OverrideActionBarPowerBar, OverrideActionBarPitchFrame,
 }
@@ -27,6 +27,11 @@ local function DisableAllScripts(frame)
 end
 
 function Bar:HideBlizz()
+	MainMenuBar:SetMovable(true)
+	MainMenuBar:SetUserPlaced(true)
+	MainMenuBar.ignoreFramePositionManager = true
+	MainMenuBar:SetAttribute("ignoreFramePositionManager", true)
+
 	for _, frame in next, framesToHide do
 		frame:SetParent(B.HiddenFrame)
 	end

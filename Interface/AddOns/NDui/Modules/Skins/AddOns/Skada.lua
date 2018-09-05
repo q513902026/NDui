@@ -44,22 +44,24 @@ function module:SkadaSkin()
 		skada:SetFrameLevel(5)
 		skada.SetFrameLevel = B.Dummy
 		skada:SetBackdrop(nil)
-
-		win.bargroup.button:SetBackdropColor(1, 1, 1, 0)
+		B.StripTextures(skada.borderFrame)
 
 		if not skada.shadow then
 			skada.shadow = B.CreateBG(skada)
 			skada.shadow:SetAllPoints()
 			skada.shadow:SetFrameLevel(1)
-			B.CreateBD(skada.shadow, .5, 3)
+			B.CreateBD(skada.shadow)
+			B.CreateSD(skada.shadow)
 			B.CreateTex(skada.shadow)
 
 			local Cskada = B.CreateButton(skada, 20, 80, ">", 18)
-			Cskada:SetPoint("RIGHT", skada, "LEFT", 0, 0)
+			Cskada:SetPoint("RIGHT", skada, "LEFT", -4, 0)
+			B.CreateSD(Cskada)
 			B.CreateTex(Cskada)
 			local Oskada = B.CreateButton(UIParent, 20, 80, "<", 18)
 			Oskada:Hide()
-			Oskada:SetPoint("RIGHT", skada, "RIGHT", 5, 0)
+			Oskada:SetPoint("RIGHT", skada, "RIGHT", 2, 0)
+			B.CreateSD(Oskada)
 			B.CreateTex(Oskada)
 			Cskada:SetScript("OnClick", function()
 				Oskada:Show()
@@ -72,14 +74,15 @@ function module:SkadaSkin()
 		end
 		skada.shadow:ClearAllPoints()
 		if win.db.enabletitle then
-			skada.shadow:SetPoint("TOPLEFT", win.bargroup.button, "TOPLEFT", -3, 3)
+			skada.shadow:SetPoint("TOPLEFT", skada.button, "TOPLEFT", -3, 3)
 		else
-			skada.shadow:SetPoint("TOPLEFT", win.bargroup, "TOPLEFT", -3, 3)
+			skada.shadow:SetPoint("TOPLEFT", skada, "TOPLEFT", -3, 3)
 		end
-		skada.shadow:SetPoint("BOTTOMRIGHT", win.bargroup, "BOTTOMRIGHT", 3, -3)
-		win.bargroup.button:SetFrameStrata("MEDIUM")
-		win.bargroup.button:SetFrameLevel(5)	
-		win.bargroup:SetFrameStrata("MEDIUM")
+		skada.shadow:SetPoint("BOTTOMRIGHT", skada, "BOTTOMRIGHT", 3, -3)
+		skada.button:SetBackdropColor(1, 1, 1, 0)
+		skada.button:SetFrameStrata("MEDIUM")
+		skada.button:SetFrameLevel(5)	
+		skada:SetFrameStrata("MEDIUM")
 	end
 
 	local function EmbedWindow(window, width, barheight, height, point, relativeFrame, relativePoint, ofsx, ofsy)
@@ -99,10 +102,10 @@ function module:SkadaSkin()
 	local windows = {}
 	local function EmbedSkada()
 		if #windows == 1 then
-			EmbedWindow(windows[1], 320, 18, 198, "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -3, 26)
+			EmbedWindow(windows[1], 320, 18, 198, "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 28)
 		elseif #windows == 2 then
-			EmbedWindow(windows[1], 320, 18, 109,  "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -3, 141)
-			EmbedWindow(windows[2], 320, 18, 109,  "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -3, 26)
+			EmbedWindow(windows[1], 320, 18, 109,  "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 147)
+			EmbedWindow(windows[2], 320, 18, 109,  "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 28)
 		end
 	end
 

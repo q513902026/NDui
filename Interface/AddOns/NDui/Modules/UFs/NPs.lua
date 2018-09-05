@@ -50,6 +50,11 @@ local CustomUnits = {
 	[GetSectionInfo(14595)] = true,	-- 深渊追猎者
 	[GetSectionInfo(16588)] = true,	-- 尖啸反舌鸟
 	[GetSectionInfo(16350)] = true,	-- 瓦里玛萨斯之影
+	--["Spawn of G'huun"] = true,
+	--["戈霍恩之嗣"] = true,
+	--["古翰幼體"] = true,
+	["爆炸物"] = true,
+	["炸彈"] = true,
 }
 function UF:CreateUnitTable()
 	if not NDuiDB["Nameplate"]["CustomUnitColor"] then return end
@@ -242,7 +247,7 @@ function UF:CreatePlates(unit)
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTargetMark)
 
 		local cicon = self:CreateTexture(nil, "OVERLAY")
-		cicon:SetPoint("LEFT", self, "TOPLEFT", 1, 1)
+		cicon:SetPoint("LEFT", self, 1, 5)
 		cicon:SetSize(12, 12)
 		cicon:SetTexture("Interface\\MINIMAP\\ObjectIcons")
 		cicon:SetTexCoord(.391, .487, .644, .74)
@@ -271,6 +276,9 @@ function UF:PostUpdatePlates(event, unit)
 end
 
 -- Player Nameplate
+local iconSize, margin = C.Auras.IconSize, 5
+local auras = B:GetModule("Auras")
+
 local function PlateVisibility(self, event)
 	if (event == "PLAYER_REGEN_DISABLED" or InCombatLockdown()) and UnitIsUnit("player", self.unit) then
 		UIFrameFadeIn(self.Health, .3, self.Health:GetAlpha(), 1)
@@ -287,12 +295,21 @@ end
 
 function UF:CreatePlayerPlate()
 	self.mystyle = "PlayerPlate"
-	self:SetSize(180, 5)
+	self:SetSize(iconSize*5 + margin*4, NDuiDB["Nameplate"]["PPHeight"])
 	self:EnableMouse(false)
+	self.iconSize = iconSize
 
 	UF:CreateHealthBar(self)
 	UF:CreatePowerBar(self)
 	UF:CreateClassPower(self)
+	if NDuiDB["Auras"]["ClassAuras"] then auras:CreateLumos(self) end
+
+	if NDuiDB["Nameplate"]["PPPowerText"] then
+		local textFrame = CreateFrame("Frame", nil, self.Power)
+		textFrame:SetAllPoints()
+		local power = B.CreateFS(textFrame, 14, "")
+		self:Tag(power, "[pppower]")
+	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", PlateVisibility)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", PlateVisibility)

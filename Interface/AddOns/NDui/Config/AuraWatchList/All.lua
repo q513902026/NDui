@@ -48,18 +48,43 @@ local list = {
 		{AuraID = 26297, UnitID = "player"},	-- 狂暴 巨魔
 		{AuraID = 20572, UnitID = "player"},	-- 血性狂怒 兽人
 		{AuraID = 33697, UnitID = "player"},	-- 血性狂怒 兽人
+		-- 饰品附魔
+		{AuraID = 275765, UnitID = "player"},	-- 艾泽里特强化
+		{AuraID = 271194, UnitID = "player"},	-- 火炮
+		{AuraID = 273992, UnitID = "player"},	-- 灵魂之速
+		{AuraID = 273955, UnitID = "player"},	-- 望远镜视野
+		{AuraID = 261612, UnitID = "player"},	-- 迅击风暴
+		{AuraID = 268887, UnitID = "player"},	-- 迅捷远航
+		{AuraID = 268854, UnitID = "player"},	-- 全能远航
+		{AuraID = 264957, UnitID = "player"},	-- 急速瞄准镜
+		{AuraID = 274472, UnitID = "player"},	-- 狂战士之怒
+		{AuraID = 268769, UnitID = "player"},	-- 标记死穴
+		{AuraID = 267179, UnitID = "player"},	-- 非凡的力量
+		{AuraID = 267325, UnitID = "player", Text = RAID_BUFF_7},	-- 注铅骰子，精通
+		{AuraID = 267329, UnitID = "player", Text = RAID_BUFF_4},	-- 急速
+		{AuraID = 267331, UnitID = "player", Text = RAID_BUFF_6},	-- 爆击
 		-- 艾泽里特特质
+		{AuraID = 280409, UnitID = "player"},	-- 血祭之力
+		{AuraID = 279902, UnitID = "player"},	-- 不稳定的烈焰
+		{AuraID = 281843, UnitID = "player"},	-- 汇帆
+		{AuraID = 280204, UnitID = "player"},	-- 徘徊的灵魂
 		{AuraID = 273685, UnitID = "player"},	-- 缜密计谋
 		{AuraID = 273714, UnitID = "player"},	-- 争分夺秒
 		{AuraID = 274443, UnitID = "player"},	-- 死亡之舞
 		{AuraID = 280433, UnitID = "player"},	-- 呼啸狂沙
+		{AuraID = 271711, UnitID = "player"},	-- 压倒能量
+		{AuraID = 272733, UnitID = "player"},	-- 弦之韵律
 		{AuraID = 268953, UnitID = "player", Text = RAID_BUFF_6},	-- 元素回旋 爆击
 		{AuraID = 268954, UnitID = "player", Text = RAID_BUFF_4},	-- 急速
 		{AuraID = 268955, UnitID = "player", Text = RAID_BUFF_7},	-- 精通
 		{AuraID = 268956, UnitID = "player", Text = RAID_BUFF_8},	-- 全能
 		{AuraID = 280780, UnitID = "player"},	-- 战斗荣耀
 		{AuraID = 280787, UnitID = "player"},	-- 反击之怒
-		{AuraID = 279928, UnitID = "player"},	-- 大地链接
+		{AuraID = 279928, UnitID = "player", Combat = true},	-- 大地链接
+		{AuraID = 280385, UnitID = "player"},	-- 压力渐增
+		{AuraID = 273842, UnitID = "player"},	-- 深渊秘密
+		{AuraID = 273843, UnitID = "player"},	-- 深渊秘密
+		{AuraID = 280412, UnitID = "player"},	-- 激励兽群
 		-- LEG药水附魔
 		{AuraID = 188027, UnitID = "player"},	-- 致命优雅，远程
 		{AuraID = 188028, UnitID = "player"},	-- 上古战神，近战
@@ -227,10 +252,10 @@ local list = {
 		{AuraID = 209858, UnitID = "player"},	-- 死疽溃烂
 		{AuraID = 240559, UnitID = "player"},	-- 重伤
 		{AuraID = 240443, UnitID = "player"},	-- 爆裂
-		{AuraID = 193018, UnitID = "player", Value = true},	-- 气体泡泡
 		{AuraID = 230087, UnitID = "player"},	-- 振作
-		-- 卡拉赞
-		{AuraID = 228796, UnitID = "player"},	-- 夜之魇燃魂
+	-- 奥迪尔
+		{AuraID = 265662, UnitID = "player"},	-- 腐化者的契约，泽克沃兹
+		{AuraID = 267409, UnitID = "player"},	-- 黑暗交易，戈霍恩
 	-- 翡翠梦魇
 		-- 尼珊德拉
 		{AuraID = 221028, UnitID = "player"},	-- 不稳定的腐烂，小怪
@@ -511,14 +536,23 @@ local list = {
 		{AuraID = 250669, UnitID = "player", Text = L["Get Out"]},	-- 灵魂爆发
 	},
 	["Warning"] = {			-- 目标重要光环组
-	-- 勇气试练
-		{AuraID = 229256, UnitID = "target"},	-- 奥丁，弧光风暴
-		{AuraID = 228174, UnitID = "target"},	-- 高姆，吐沫狂怒
-		{AuraID = 228803, UnitID = "target"},	-- 海拉，酝酿风暴
-		{AuraID = 203816, UnitID = "target"},	-- 小怪，精力
-		{AuraID = 228611, UnitID = "target"},	-- 小怪，幽灵怒火
-	-- 大秘
+	-- 5人本
 		{AuraID = 226510, UnitID = "target"},	-- 血池回血
+	-- 8.0副本
+		{AuraID = 257458, UnitID = "target"},	-- 自由镇尾王易伤
+		{AuraID = 260512, UnitID = "target"},	-- 灵魂收割，神庙
+	-- 奥迪尔
+		{AuraID = 278218, UnitID = "target"},	-- 虚空召唤，泽克沃兹
+		{AuraID = 278220, UnitID = "target"},	-- 虚空超脱，泽克沃兹
+		{AuraID = 273432, UnitID = "target"},	-- 暗影束缚，祖尔
+		{AuraID = 273288, UnitID = "target"},	-- 婆娑脉动，祖尔
+		{AuraID = 274761, UnitID = "target"},	-- 湮灭帷幕，拆解者米斯拉克斯
+		{AuraID = 276900, UnitID = "target"},	-- 临界炽焰，拆解者米斯拉克斯
+		{AuraID = 279013, UnitID = "target"},	-- 精华碎裂，拆解者米斯拉克斯
+		{AuraID = 263482, UnitID = "target"},	-- 重组冲击，戈霍恩
+		{AuraID = 263372, UnitID = "target"},	-- 能量矩阵，戈霍恩
+		{AuraID = 270447, UnitID = "target"},	-- 腐化滋长，戈霍恩
+	-- 7.0副本
 		{AuraID = 244621, UnitID = "target"},	-- 虚空裂隙，执政团尾王
 		{AuraID = 192132, UnitID = "target"},	-- 英灵殿赫娅
 		{AuraID = 192133, UnitID = "target"},	-- 英灵殿赫娅
@@ -532,6 +566,12 @@ local list = {
 		{AuraID = 212707, UnitID = "target"},	-- 召云聚气
 		{AuraID = 210346, UnitID = "target"},	-- 恐惧荆棘光环
 		{AuraID = 210340, UnitID = "target"},	-- 恐惧荆棘光环
+	-- 勇气试练
+		{AuraID = 229256, UnitID = "target"},	-- 奥丁，弧光风暴
+		{AuraID = 228174, UnitID = "target"},	-- 高姆，吐沫狂怒
+		{AuraID = 228803, UnitID = "target"},	-- 海拉，酝酿风暴
+		{AuraID = 203816, UnitID = "target"},	-- 小怪，精力
+		{AuraID = 228611, UnitID = "target"},	-- 小怪，幽灵怒火
 	-- 暗夜要塞
 		{AuraID = 204697, UnitID = "target"},	-- 毒蝎虫群
 		{AuraID = 204448, UnitID = "target"},	-- 几丁质外壳

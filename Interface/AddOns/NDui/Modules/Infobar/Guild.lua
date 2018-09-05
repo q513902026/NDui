@@ -12,6 +12,7 @@ infoFrame:SetPoint("TOPLEFT", UIParent, 15, -30)
 infoFrame:SetClampedToScreen(true)
 infoFrame:SetFrameStrata("TOOLTIP")
 B.CreateBD(infoFrame, .7)
+B.CreateSD(infoFrame)
 B.CreateTex(infoFrame)
 infoFrame:Hide()
 
@@ -43,10 +44,10 @@ B.CreateFS(bu[4], 13, ZONE, false, "RIGHT", -5, 0)
 B.CreateFS(infoFrame, 13, DB.LineString, false, "BOTTOMRIGHT", -12, 58)
 local whspInfo = DB.InfoColor..DB.RightButton..L["Whisper"]
 B.CreateFS(infoFrame, 13, whspInfo, false, "BOTTOMRIGHT", -15, 42)
-local copyInfo = DB.InfoColor.."ALT +"..DB.LeftButton..L["Copy Name"]
-B.CreateFS(infoFrame, 13, copyInfo, false, "BOTTOMRIGHT", -15, 26)
-local invtInfo = DB.InfoColor.."ALT +"..DB.RightButton..L["Invite"]
-B.CreateFS(infoFrame, 13, invtInfo, false, "BOTTOMRIGHT", -15, 10)
+local invtInfo = DB.InfoColor.."ALT +"..DB.LeftButton..L["Invite"]
+B.CreateFS(infoFrame, 13, invtInfo, false, "BOTTOMRIGHT", -15, 26)
+local copyInfo = DB.InfoColor.."SHIFT +"..DB.LeftButton..L["Copy Name"]
+B.CreateFS(infoFrame, 13, copyInfo, false, "BOTTOMRIGHT", -15, 10)
 
 local scrollFrame = CreateFrame("ScrollFrame", nil, infoFrame, "UIPanelScrollFrameTemplate")
 scrollFrame:SetSize(312, 320)
@@ -85,24 +86,27 @@ local function createRoster(i)
 	button:RegisterForClicks("AnyUp")
 	button:SetScript("OnClick", function(_, btn)
 		local name = guildTable[i][3]
-		if IsAltKeyDown() then
-			if btn == "LeftButton" then
-				local editBox = ChatEdit_ChooseBoxForSend()
-				if editBox:HasFocus() then
-					editBox:Insert(name)
-				else
-					ChatEdit_ActivateChat(editBox)
-					editBox:SetText(name)
-					editBox:HighlightText()
-				end
-			else
+		if btn == "LeftButton" then
+			if IsAltKeyDown() then
 				InviteToGroup(name)
+			elseif IsShiftKeyDown() then
+				if MailFrame:IsShown() then
+					MailFrameTab_OnClick(nil, 2)
+					SendMailNameEditBox:SetText(name)
+					SendMailNameEditBox:HighlightText()
+				else
+					local editBox = ChatEdit_ChooseBoxForSend()
+					local hasText = (editBox:GetText() ~= "")
+					ChatEdit_ActivateChat(editBox)
+					editBox:Insert(name)
+					if not hasText then editBox:HighlightText() end
+				end
 			end
 		else
-			if btn == "LeftButton" then return end
 			ChatFrame_OpenChat("/w "..name.." ", SELECTED_DOCK_FRAME)
 		end
 	end)
+
 	return button
 end
 

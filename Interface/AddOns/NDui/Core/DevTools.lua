@@ -84,11 +84,60 @@ SlashCmdList["NDUI_GETFONT"] = function(msg)
 end
 SLASH_NDUI_GETFONT1 = "/nff"
 
+SlashCmdList["NDUI_CHECK_QUEST"] = function(msg)
+	if not msg then return end
+	print("QuestID "..msg.." complete:", IsQuestFlaggedCompleted(tonumber(msg)))
+end
+SLASH_NDUI_CHECK_QUEST1 = "/ncq"
+
 SlashCmdList["NDUI_DEV"] = function()
 	UIParentLoadAddOn("Blizzard_Console")
 	DeveloperConsole:Toggle()
 end
 SLASH_NDUI_DEV1 = "/ndev"
+
+do
+	local versionList = {}
+	C_ChatInfo.RegisterAddonMessagePrefix("NDuiFVC")
+
+	local function SendVerCheck(channel)
+		wipe(versionList)
+		C_ChatInfo.SendAddonMessage("NDuiFVC", "VersionCheck", channel)
+
+		C_Timer.After(3, function()
+			print("----------")
+			for name, version in pairs(versionList) do
+				print(name.." "..version)
+			end
+		end)
+	end
+
+	local function VerCheckListen(_, ...)
+		local prefix, msg, distType, sender = ...
+
+		if prefix == "NDuiFVC" then
+			if msg == "VersionCheck" then
+				C_ChatInfo.SendAddonMessage("NDuiFVC", "MyVer-"..DB.Version, distType)
+			elseif msg:find("MyVer") then
+				local _, version = string.split("-", msg)
+				versionList[sender] = version.." - "..distType
+			end
+		end
+	end
+	B:RegisterEvent("CHAT_MSG_ADDON", VerCheckListen)
+
+	SlashCmdList["NDUI_VER_CHECK"] = function()
+		if not DB.isDeveloper then return end
+		local channel
+		if IsInRaid() then
+			channel = "RAID"
+		elseif IsInGuild() then
+			channel = "GUILD"
+		end
+		if channel then SendVerCheck(channel) end
+	end
+	SLASH_NDUI_VER_CHECK1 = "/nduiver"
+end
 
 -- Grids
 local grid

@@ -14,11 +14,15 @@ function module:OnLogin()
 	self:ShowItemLevel()
 	self:QuickJoin()
 	self:QuestNotifier()
+	self:GuildBest()
 
 	-- Hide Bossbanner
 	if NDuiDB["Misc"]["HideBanner"] then
 		BossBanner:UnregisterAllEvents()
 	end
+
+	-- Fix patch 27326
+	GuildControlUIRankSettingsFrameRosterLabel = CreateFrame("Frame", nil, B.HiddenFrame)
 end
 
 -- Archaeology counts
@@ -431,6 +435,26 @@ do
 			end
 		end)
 	end
+
+	-- https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint
+	if (UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
+		UIDROPDOWNMENU_VALUE_PATCH_VERSION = 2
+		hooksecurefunc("UIDropDownMenu_InitializeHelper", function()
+			if UIDROPDOWNMENU_VALUE_PATCH_VERSION ~= 2 then return end
+
+			for i = 1, UIDROPDOWNMENU_MAXLEVELS do
+				for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
+					local b = _G["DropDownList"..i.."Button"..j]
+					if not (issecurevariable(b, "value") or b:IsShown()) then
+						b.value = nil
+						repeat
+							j, b["fx" .. j] = j+1
+						until issecurevariable(b, "value")
+					end
+				end
+			end
+		end)
+	end
 end
 
 -- Roll Gold
@@ -531,4 +555,32 @@ do
 	end
 
 	B:RegisterEvent("ADDON_LOADED", setupMisc)
+end
+
+-- Instant delete
+do
+	hooksecurefunc(StaticPopupDialogs["DELETE_GOOD_ITEM"], "OnShow", function(self)
+		self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
+	end)
+end
+
+-- TradeFrame hook
+do
+	local infoText = B.CreateFS(TradeFrame, 16, "")
+	infoText:ClearAllPoints()
+	infoText:SetPoint("TOP", TradeFrameRecipientNameText, "BOTTOM", 0, -5)
+
+	hooksecurefunc("TradeFrame_Update", function()
+		local r, g, b = B.UnitColor("NPC")
+		TradeFrameRecipientNameText:SetTextColor(r, g, b)
+
+		local unitName = GetUnitName("NPC", true)
+		local text = "|cffff0000"..L["Stranger"]
+		if B.UnitInGuild(unitName) then
+			text = "|cff00ff00"..GUILD
+		elseif B.FriendsList[unitName] then
+			text = "|cffffff00"..FRIEND
+		end
+		infoText:SetText(text)
+	end)
 end

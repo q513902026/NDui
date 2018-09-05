@@ -44,14 +44,14 @@ local function genFilterList()
 end
 B.genFilterList = genFilterList
 
-local friendsList = {}
+B.FriendsList = {}
 local function updateFriends()
-	wipe(friendsList)
+	wipe(B.FriendsList)
 
 	for i = 1, GetNumFriends() do
 		local name = GetFriendInfo(i)
 		if name then
-			friendsList[Ambiguate(name, "none")] = true
+			B.FriendsList[Ambiguate(name, "none")] = true
 		end
 	end
 
@@ -59,7 +59,7 @@ local function updateFriends()
 		for j = 1, BNGetNumFriendGameAccounts(i) do
 			local _, characterName, client, realmName = BNGetFriendGameAccountInfo(i, j)
 			if client == BNET_CLIENT_WOW then
-				friendsList[Ambiguate(characterName.."-"..realmName, "none")] = true
+				B.FriendsList[Ambiguate(characterName.."-"..realmName, "none")] = true
 			end
 		end
 	end
@@ -73,7 +73,7 @@ local function genChatFilter(_, event, msg, author, _, _, _, flag)
 	local name = Ambiguate(author, "none")
 	if UnitIsUnit(name, "player") or (event == "CHAT_MSG_WHISPER" and flag == "GM") or flag == "DEV" then
 		return
-	elseif B.UnitInGuild(author) or UnitInRaid(name) or UnitInParty(name) or friendsList[name] then
+	elseif B.UnitInGuild(author) or UnitInRaid(name) or UnitInParty(name) or B.FriendsList[name] then
 		return
 	end
 
@@ -97,8 +97,8 @@ local function genChatFilter(_, event, msg, author, _, _, _, flag)
 end
 
 local addonBlockList = {
-	"任务进度提示%s?[:：]", "%[接受任务%]", "%(任务完成%)", "<大脚组队提示>", "<大脚团队提示>", "【网%.易%.有%.爱】", "EUI:", "EUI_RaidCD", "打断:.+|Hspell", "PS 死亡: .+>", "%*%*.+%*%*",
-	"<iLvl>", ("%-"):rep(30), "<小队物品等级:.+>"
+	"任务进度提示%s?[:：]", "%[接受任务%]", "%(任务完成%)", "<大脚组队提示>", "<大脚团队提示>", "【爱不易】", "EUI:", "EUI_RaidCD", "打断:.+|Hspell", "PS 死亡: .+>", "%*%*.+%*%*",
+	"<iLvl>", ("%-"):rep(30), "<小队物品等级:.+>", "<LFG>", "wowcdk", "进度:", "属性通报", "wowcn%.vip"
 }
 
 local function genAddonBlock(_, _, msg, author)
@@ -155,6 +155,38 @@ hooksecurefunc(BNToastFrame, "ShowToast", function(self)
 	end
 end)
 
+--[[
+	过滤WQT的邀请
+	Credit: WorldQuestTrackerBlocker, Jordy141
+]]
+local WQTUsers = {}
+local inviteString = _G.ERR_INVITED_TO_GROUP_SS:gsub(".+|h", "")
+
+local function blockInviteString(_, _, msg)
+	if msg:find(inviteString) then
+		local name = msg:match("%[(.+)%]")
+		if WQTUsers[name] then
+			return true
+		end
+	end
+end
+
+local function blockWhisperString(_, _, msg, author)
+	local name = Ambiguate(author, "none")
+	if msg:find("%[World Quest Tracker%]") or msg:find("一起做世界任务吧：") or msg:find("一起来做世界任务<") then
+		if not WQTUsers[name] then
+			WQTUsers[name] = true
+		end
+		return true
+	end
+end
+
+local function hideInvitePopup(_, name)
+	if WQTUsers[name] then
+		StaticPopup_Hide("PARTY_INVITE")
+	end
+end
+
 function module:ChatFilter()
 	genFilterList()
 	genChatAtList()
@@ -173,6 +205,11 @@ function module:ChatFilter()
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", genAddonBlock)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", genAddonBlock)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", genAddonBlock)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", genAddonBlock)
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", chatAtMe)
+
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", blockInviteString)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", blockWhisperString)
+	B:RegisterEvent("PARTY_INVITE_REQUEST", hideInvitePopup)
 end

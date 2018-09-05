@@ -1,15 +1,12 @@
 ﻿local _, ns = ...
 local B, C, L, DB = unpack(ns)
-local module = B:RegisterModule("Minimap")
+local module = B:GetModule("Maps")
 
 function module:CreatePulse()
 	if not NDuiDB["Map"]["CombatPulse"] then return end
 
-	local MBG = CreateFrame("Frame", nil, Minimap)
-	MBG:SetFrameLevel(Minimap:GetFrameLevel() - 1)
-	MBG:SetPoint("TOPLEFT", -3, 3)
-	MBG:SetPoint("BOTTOMRIGHT", 3, -3)
-	B.CreateBD(MBG)
+	local MBG = B.CreateBG(Minimap, 1)
+	B.CreateSD(MBG)
 	local anim = MBG:CreateAnimationGroup()
 	anim:SetLooping("BOUNCE")
 	anim.fader = anim:CreateAnimation("Alpha")
@@ -20,15 +17,15 @@ function module:CreatePulse()
 
 	local function updateMinimapAnim(event)
 		if event == "PLAYER_REGEN_DISABLED" then
-			MBG:SetBackdropBorderColor(1, 0, 0)
+			MBG.Shadow:SetBackdropBorderColor(1, 0, 0)
 			anim:Play()
 		elseif not InCombatLockdown() then
 			if C_Calendar.GetNumPendingInvites() > 0 or MiniMapMailFrame:IsShown() then
-				MBG:SetBackdropBorderColor(1, 1, 0)
+				MBG.Shadow:SetBackdropBorderColor(1, 1, 0)
 				anim:Play()
 			else
 				anim:Stop()
-				MBG:SetBackdropBorderColor(0, 0, 0)
+				MBG.Shadow:SetBackdropBorderColor(0, 0, 0)
 			end
 		end
 	end
@@ -40,7 +37,7 @@ function module:CreatePulse()
 	MiniMapMailFrame:HookScript("OnHide", function()
 		if InCombatLockdown() then return end
 		anim:Stop()
-		MBG:SetBackdropBorderColor(0, 0, 0)
+		MBG.Shadow:SetBackdropBorderColor(0, 0, 0)
 	end)
 end
 
@@ -54,6 +51,18 @@ function module:ReskinRegions()
 		self:GetHighlightTexture():SetTexture(DB.garrTex)
 		self:SetSize(30, 30)
 	end)
+	if not IsAddOnLoaded("GarrisonMissionManager") then
+		GarrisonLandingPageMinimapButton:RegisterForClicks("AnyUp")
+		GarrisonLandingPageMinimapButton:HookScript("OnClick", function(_, btn, down)
+			if btn == "MiddleButton" and not down then
+				HideUIPanel(GarrisonLandingPage)
+				ShowGarrisonLandingPage(LE_GARRISON_TYPE_7_0)
+			elseif btn == "RightButton" and not down then
+				HideUIPanel(GarrisonLandingPage)
+				ShowGarrisonLandingPage(LE_GARRISON_TYPE_6_0)
+			end
+		end)
+	end
 
 	-- QueueStatus Button
 	QueueStatusMinimapButton:ClearAllPoints()
@@ -100,6 +109,7 @@ function module:ReskinRegions()
 	Invt:SetPoint("TOPRIGHT", Minimap, "BOTTOMLEFT", -20, -20)
 	Invt:SetSize(300, 80)
 	B.CreateBD(Invt)
+	B.CreateSD(Invt)
 	B.CreateTex(Invt)
 	B.CreateFS(Invt, 16, DB.InfoColor..GAMETIME_TOOLTIP_CALENDAR_INVITES)
 
@@ -204,11 +214,11 @@ function module:RecycleBin()
 
 					if child:GetObjectType() == "Button" then
 						child:SetHighlightTexture(DB.bdTex) -- prevent nil function
-						child:GetHighlightTexture():SetColorTexture(1, 1, 1, .3)
+						child:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 					elseif child:GetObjectType() == "Frame" then
 						child.highlight = child:CreateTexture(nil, "HIGHLIGHT")
 						child.highlight:SetAllPoints()
-						child.highlight:SetColorTexture(1, 1, 1, .3)
+						child.highlight:SetColorTexture(1, 1, 1, .25)
 					end
 					B.CreateSD(child, 3, 3)
 
@@ -286,10 +296,9 @@ function module:WhoPingsMyMap()
 	end)
 end
 
-function module:OnLogin()
+function module:SetupMinimap()
 	-- Shape and Position
 	local scale = NDuiDB["Map"]["MinmapScale"]
-	function GetMinimapShape() return "SQUARE" end
 	Minimap:SetFrameLevel(10)
 	Minimap:SetMaskTexture("Interface\\Buttons\\WHITE8X8")
 	MinimapCluster:SetScale(scale)
@@ -348,8 +357,7 @@ function module:OnLogin()
 	}
 
 	for _, v in pairs(frames) do
-		_G[v]:Hide()
-		_G[v].Show = B.Dummy
+		B.HideObject(_G[v])
 	end
 	MinimapCluster:EnableMouse(false)
 	Minimap:SetArchBlobRingScalar(0)

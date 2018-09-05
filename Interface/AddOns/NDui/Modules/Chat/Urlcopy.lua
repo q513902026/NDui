@@ -57,21 +57,39 @@ function module:UrlCopy()
 		end
 	end
 
-	local orig = ChatFrame_OnHyperlinkShow
-	function ChatFrame_OnHyperlinkShow(frame, link, text, button)
+	local orig = ItemRefTooltip.SetHyperlink
+	function ItemRefTooltip:SetHyperlink(link, ...)
+		if link and link:sub(0, 3) == "url" then return end
+
+		return orig(self, link, ...)
+	end
+
+	hooksecurefunc("ChatFrame_OnHyperlinkShow", function(frame, link, _, button)
 		local type, value = link:match("(%a+):(.+)")
-		if IsAltKeyDown() and type == "player" then
-			InviteToGroup(value:match("([^:]+)"))
-		elseif IsModifierKeyDown() and type == "BNplayer" then
-			local _, bnID = value:match("([^:]*):([^:]*):")
-			if not bnID then return end
-			local _, _, _, _, _, gameID = BNGetFriendInfoByID(bnID)
-			if gameID and CanCooperateWithGameAccount(gameID) then
+		local hide
+		if button == "LeftButton" and IsModifierKeyDown() then
+			if type == "player" then
+				local unit = value:match("([^:]+)")
 				if IsAltKeyDown() then
-					BNInviteFriend(gameID)
+					InviteToGroup(unit)
+					hide = true
 				elseif IsControlKeyDown() then
-					local _, charName, _, realmName = BNGetGameAccountInfo(gameID)
-					GuildInvite(charName.."-"..realmName)
+					GuildInvite(unit)
+					hide = true
+				end
+			elseif type == "BNplayer" then
+				local _, bnID = value:match("([^:]*):([^:]*):")
+				if not bnID then return end
+				local _, _, _, _, _, gameID = BNGetFriendInfoByID(bnID)
+				if gameID and CanCooperateWithGameAccount(gameID) then
+					if IsAltKeyDown() then
+						BNInviteFriend(gameID)
+						hide = true
+					elseif IsControlKeyDown() then
+						local _, charName, _, realmName = BNGetGameAccountInfo(gameID)
+						GuildInvite(charName.."-"..realmName)
+						hide = true
+					end
 				end
 			end
 		elseif type == "url" then
@@ -82,8 +100,40 @@ function module:UrlCopy()
 				eb:SetFocus()
 				eb:HighlightText()
 			end
-		else
-			orig(self, link, text, button)
 		end
-	end
+
+		if hide then ChatEdit_ClearChat(ChatFrame1.editBox) end
+	end)
+
+	hooksecurefunc("SetItemRef", function(link, _, button)
+		if strsub(link, 1, 6) == "player" and button == "LeftButton" and IsModifiedClick("CHATLINK") then
+			if not StaticPopup_Visible("ADD_IGNORE") and not StaticPopup_Visible("ADD_FRIEND") and not StaticPopup_Visible("ADD_GUILDMEMBER")
+				and not StaticPopup_Visible("ADD_RAIDMEMBER") and not StaticPopup_Visible("CHANNEL_INVITE") and not ChatEdit_GetActiveWindow() then
+
+				local namelink, name
+				if strsub(link, 7, 8) == "GM" then
+					namelink = strsub(link, 10)
+				elseif strsub(link, 7, 15) == "Community" then
+					namelink = strsub(link, 17)
+				else
+					namelink = strsub(link, 8)
+				end
+				if namelink then name = strsplit(":", namelink) end
+
+				if name and strlen(name) > 0 then
+					if MailFrame and MailFrame:IsShown() then
+						MailFrameTab_OnClick(nil, 2)
+						SendMailNameEditBox:SetText(name)
+						SendMailNameEditBox:HighlightText()
+					else
+						local editBox = ChatEdit_ChooseBoxForSend()
+						local hasText = (editBox:GetText() ~= "")
+						ChatEdit_ActivateChat(editBox)
+						editBox:Insert(name)
+						if not hasText then editBox:HighlightText() end
+					end
+				end
+			end
+		end
+	end)
 end

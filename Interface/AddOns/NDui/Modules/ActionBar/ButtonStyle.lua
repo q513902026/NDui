@@ -117,8 +117,9 @@ local function SetupCooldown(cooldown, cfg)
 end
 
 local function SetupBackdrop(button)
-	local bg = B.CreateBG(button, 2)
+	local bg = B.CreateBG(button, 0)
 	B.CreateBD(bg)
+	B.CreateSD(bg)
 	B.CreateTex(bg)
 	if NDuiDB["Actionbar"]["Classcolor"] then
 		bg:SetBackdropColor(DB.cc.r, DB.cc.g, DB.cc.b, .25)
@@ -202,7 +203,7 @@ function B:StyleActionButton(button, cfg)
 	SetupTexture(pushedTexture, cfg.pushedTexture, "SetPushedTexture", button)
 	SetupTexture(highlightTexture, cfg.highlightTexture, "SetHighlightTexture", button)
 	SetupTexture(checkedTexture, cfg.checkedTexture, "SetCheckedTexture", button)
-	highlightTexture:SetColorTexture(1, 1, 1, .3)
+	highlightTexture:SetColorTexture(1, 1, 1, .25)
 
 	--cooldown
 	SetupCooldown(cooldown, cfg.cooldown)
@@ -266,7 +267,7 @@ function B:StyleExtraActionButton(cfg)
 	SetupTexture(pushedTexture, cfg.pushedTexture, "SetPushedTexture", button)
 	SetupTexture(highlightTexture, cfg.highlightTexture, "SetHighlightTexture", button)
 	SetupTexture(checkedTexture, cfg.checkedTexture, "SetCheckedTexture", button)
-	highlightTexture:SetColorTexture(1, 1, 1, .3)
+	highlightTexture:SetColorTexture(1, 1, 1, .25)
 
 	--cooldown
 	SetupCooldown(cooldown, cfg.cooldown)

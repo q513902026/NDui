@@ -30,8 +30,8 @@ local list = {
 		{AuraID = 191748, UnitID = "target", Caster = "player"},	-- 诸界之灾
 	},
 	["Special Aura"] = {	-- 玩家重要光环组
-		{AuraID = 48265, UnitID = "pet"},		-- 死亡脚步
 		{AuraID = 63560, UnitID = "pet"},		-- 黑暗突变
+		{AuraID = 48265, UnitID = "player"},	-- 死亡脚步
 		{AuraID = 55233, UnitID = "player"},	-- 吸血鬼之血
 		{AuraID = 48707, UnitID = "player"},	-- 反魔法护罩
 		{AuraID = 81256, UnitID = "player"},	-- 符文刃舞
@@ -65,6 +65,7 @@ local list = {
 		{AuraID = 273947, UnitID = "player"},	-- 鲜血禁闭
 		{AuraID = 253595, UnitID = "player", Combat = true},	-- 酷寒突袭
 		{AuraID = 281209, UnitID = "player", Combat = true},	-- 冷酷之心
+		{AuraID = 47568, UnitID = "player"},	-- 符文武器增效
 	},
 	["Focus Aura"] = {		-- 焦点光环组
 		{AuraID = 55078, UnitID = "focus", Caster = "player"},	-- 血之疫病

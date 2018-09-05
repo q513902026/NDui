@@ -3,60 +3,42 @@ local B, C, L, DB = unpack(ns)
 local module = B:RegisterModule("Bags")
 local cargBags = ns.cargBags
 
+local itemLevelString = _G["ITEM_LEVEL"]:gsub("%%d", "")
+local ItemDB = {}
+function module:GetBagItemLevel(link, bag, slot)
+	if ItemDB[link] then return ItemDB[link] end
+
+	local tip = _G["NDuiBagItemTooltip"] or CreateFrame("GameTooltip", "NDuiBagItemTooltip", nil, "GameTooltipTemplate")
+	tip:SetOwner(UIParent, "ANCHOR_NONE")
+	tip:SetBagItem(bag, slot)
+
+	for i = 2, 5 do
+		local text = _G[tip:GetName().."TextLeft"..i]:GetText() or ""
+		local hasLevel = string.find(text, itemLevelString)
+		if hasLevel then
+			local level = string.match(text, "(%d+)%)?$")
+			ItemDB[link] = tonumber(level)
+			break
+		end
+	end
+	return ItemDB[link]
+end
+
 function module:OnLogin()
 	if not NDuiDB["Bags"]["Enable"] then return end
+	if IsAddOnLoaded("AuroraClassic") then
+		AuroraOptionsbags:SetAlpha(0)
+		AuroraOptionsbags:Disable()
+		AuroraConfig.bags = false
+	end
 
 	local Backpack = cargBags:NewImplementation("NDui_Backpack")
 	Backpack:RegisterBlizzard()
 
 	local f = {}
+	local onlyBags, bagAzeriteItem, bagEquipment, bagConsumble, onlyBank, bankAzeriteItem, bankLegendary, bankEquipment, bankConsumble, onlyReagent = self:GetFilters()
+
 	function Backpack:OnInit()
-		-- Item Filter
-		local function isItemInBag(item)
-			return item.bagID >= 0 and item.bagID <= 4
-		end
-
-		local function isItemInBank(item)
-			return item.bagID == -1 or item.bagID >= 5 and item.bagID <= 11
-		end
-
-		local function isAzeriteArmor(item)
-			if not NDuiDB["Bags"]["ItemFilter"] then return end
-			if not item.link then return end
-			return C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(item.link)
-		end
-
-		local function isItemEquipment(item)
-			if not NDuiDB["Bags"]["ItemFilter"] then return end
-			if NDuiDB["Bags"]["ItemSetFilter"] then
-				return item.isInSet
-			else
-				return item.level and item.rarity > 1 and (item.subType == EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC or (item.equipLoc ~= "" and item.equipLoc ~= "INVTYPE_BAG"))
-			end
-		end
-
-		local function isItemConsumble(item)
-			if not NDuiDB["Bags"]["ItemFilter"] then return end
-			return item.type == AUCTION_CATEGORY_CONSUMABLES and item.rarity > LE_ITEM_QUALITY_POOR or item.type == AUCTION_CATEGORY_ITEM_ENHANCEMENT
-		end
-
-		local function isItemLegendary(item)
-			if not NDuiDB["Bags"]["ItemFilter"] then return end
-			return item.rarity == LE_ITEM_QUALITY_LEGENDARY
-		end
-
-		local onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemConsumble(item) end
-		local bagAzeriteItem = function(item) return isItemInBag(item) and isAzeriteArmor(item) end
-		local bagEquipment = function(item) return isItemInBag(item) and isItemEquipment(item) end
-		local bagConsumble = function(item) return isItemInBag(item) and isItemConsumble(item) end
-		local onlyBank = function(item) return isItemInBank(item) and not isItemEquipment(item) and not isItemConsumble(item) end
-		local bankAzeriteItem = function(item) return isItemInBank(item) and isAzeriteArmor(item) end
-		local bankLegendary = function(item) return isItemInBank(item) and isItemLegendary(item) end
-		local bankEquipment = function(item) return isItemInBank(item) and isItemEquipment(item) end
-		local bankConsumble = function(item) return isItemInBank(item) and isItemConsumble(item) end
-		local onlyReagent = function(item) return item.bagID == -3 end
-
-		-- Backpack Init
 		local MyContainer = self:GetContainerClass()
 
 		f.main = MyContainer:New("Main", {Columns = NDuiDB["Bags"]["BagsWidth"], Bags = "bags"})
@@ -80,11 +62,6 @@ function module:OnLogin()
 		f.bank:SetPoint("BOTTOMRIGHT", f.main, "BOTTOMLEFT", -20, 0)
 		f.bank:Hide()
 
-		f.reagent = MyContainer:New("Reagent", {Columns = NDuiDB["Bags"]["BankWidth"], Bags = "bankreagent"})
-		f.reagent:SetFilter(onlyReagent, true)
-		f.reagent:SetPoint("BOTTOMLEFT", f.bank)
-		f.reagent:Hide()
-
 		f.bankAzeriteItem = MyContainer:New("BankAzeriteItem", {Columns = NDuiDB["Bags"]["BankWidth"], Bags = "bankazeriteitem"})
 		f.bankAzeriteItem:SetFilter(bankAzeriteItem, true)
 		f.bankAzeriteItem:SetParent(f.bank)
@@ -100,6 +77,11 @@ function module:OnLogin()
 		f.bankConsumble = MyContainer:New("BankConsumble", {Columns = NDuiDB["Bags"]["BankWidth"], Bags = "bankconsumble"})
 		f.bankConsumble:SetFilter(bankConsumble, true)
 		f.bankConsumble:SetParent(f.bank)
+
+		f.reagent = MyContainer:New("Reagent", {Columns = NDuiDB["Bags"]["BankWidth"], Bags = "bankreagent"})
+		f.reagent:SetFilter(onlyReagent, true)
+		f.reagent:SetPoint("BOTTOMLEFT", f.bank)
+		f.reagent:Hide()
 	end
 
 	function Backpack:OnBankOpened()
@@ -122,7 +104,7 @@ function module:OnLogin()
 	function MyButton:OnCreate()
 		self:SetNormalTexture(nil)
 		self:SetPushedTexture(nil)
-		self:GetHighlightTexture():SetColorTexture(1, 1, 1, .3)
+		self:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 		self:SetSize(iconSize, iconSize)
 
 		self.Icon:SetAllPoints()
@@ -130,12 +112,8 @@ function module:OnLogin()
 		self.Count:SetPoint("BOTTOMRIGHT", 1, 1)
 		self.Count:SetFont(unpack(DB.Font))
 
-		self.BG = B.CreateBG(self, 1.2)
-		self.BG:SetBackdrop({
-			bgFile = DB.bdTex, edgeFile = DB.bdTex, edgeSize = 1.2,
-		})
-		self.BG:SetBackdropColor(0, 0, 0, .3)
-		self.BG:SetBackdropBorderColor(0, 0, 0)
+		self.BG = B.CreateBG(self)
+		B.CreateBD(self.BG, .3)
 
 		self.Junk = self:CreateTexture(nil, "ARTWORK")
 		self.Junk:SetAtlas("bags-junkcoin")
@@ -188,27 +166,6 @@ function module:OnLogin()
 		self.ShowNewItems = true
 	end
 
-	local itemLevelString = _G["ITEM_LEVEL"]:gsub("%%d", "")
-	local ItemDB = {}
-	local function GetBagItemLevel(link, bag, slot)
-		if ItemDB[link] then return ItemDB[link] end
-
-		local tip = _G["NDuiBagItemTooltip"] or CreateFrame("GameTooltip", "NDuiBagItemTooltip", nil, "GameTooltipTemplate")
-		tip:SetOwner(UIParent, "ANCHOR_NONE")
-		tip:SetBagItem(bag, slot)
-
-		for i = 2, 5 do
-			local text = _G[tip:GetName().."TextLeft"..i]:GetText() or ""
-			local hasLevel = string.find(text, itemLevelString)
-			if hasLevel then
-				local level = string.match(text, "(%d+)%)?$")
-				ItemDB[link] = tonumber(level)
-				break
-			end
-		end
-		return ItemDB[link]
-	end
-
 	function MyButton:OnUpdate(item)
 		if MerchantFrame:IsShown() and item.rarity == LE_ITEM_QUALITY_POOR and item.sellPrice > 0 then
 			self.Junk:SetAlpha(1)
@@ -232,7 +189,7 @@ function module:OnLogin()
 
 		if NDuiDB["Bags"]["BagsiLvl"] then
 			if item.link and item.level and item.rarity > 1 and (item.subType == EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC or (item.equipLoc ~= "" and item.equipLoc ~= "INVTYPE_TABARD" and item.equipLoc ~= "INVTYPE_BODY" and item.equipLoc ~= "INVTYPE_BAG")) then
-				local level = GetBagItemLevel(item.link, item.bagID, item.slotID) or item.level
+				local level = module:GetBagItemLevel(item.link, item.bagID, item.slotID) or item.level
 				local color = BAG_ITEM_QUALITY_COLORS[item.rarity]
 				self.iLvl:SetText(level)
 				self.iLvl:SetTextColor(color.r, color.g, color.b)
@@ -262,7 +219,7 @@ function module:OnLogin()
 	local BagButton = Backpack:GetClass("BagButton", true, "BagButton")
 	function BagButton:OnCreate()
 		self:SetNormalTexture(nil)
-		self:GetHighlightTexture():SetColorTexture(1, 1, 1, .3)
+		self:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 		self:SetPushedTexture(nil)
 		self:SetCheckedTexture(DB.textures.pushed)
 		self:GetCheckedTexture():SetVertexColor(.3, .9, .9, .5)
@@ -330,9 +287,14 @@ function module:OnLogin()
 
 	function MyContainer:OnCreate(name, settings)
 		self.Settings = settings
-		B.CreateBD(self, .5, 1)
-		B.CreateSD(self, 2, 3)
-		B.CreateTex(self)
+		if IsAddOnLoaded("AuroraClassic") then
+			local F = unpack(AuroraClassic)
+			F.SetBD(self)
+		else
+			B.CreateBD(self)
+			B.CreateSD(self)
+			B.CreateTex(self)
+		end
 
 		self:SetParent(settings.Parent or Backpack)
 		self:SetFrameStrata("HIGH")
@@ -379,7 +341,7 @@ function module:OnLogin()
 		sbg:SetPoint("CENTER", search, "CENTER")
 		sbg:SetSize(230, 22)
 		sbg:SetFrameLevel(search:GetFrameLevel() - 1)
-		B.CreateBD(sbg, .5, 1)
+		B.CreateBD(sbg)
 
 		local tagDisplay = self:SpawnPlugin("TagDisplay", "[money]", infoFrame)
 		tagDisplay:SetFont(unpack(DB.Font))
@@ -419,12 +381,18 @@ function module:OnLogin()
 			bagBar.isGlobal = true
 			bagBar:Hide()
 			self.BagBar = bagBar
-			bagBar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 8, -12)
+			bagBar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 8, -11)
 			local bg = CreateFrame("Frame", nil, bagBar)
-			bg:SetPoint("TOPLEFT", -10, 10)
-			bg:SetPoint("BOTTOMRIGHT", -115, -10)
-			B.CreateBD(bg)
-			B.CreateTex(bg)
+			bg:SetPoint("TOPLEFT", -8, 8)
+			bg:SetPoint("BOTTOMRIGHT", -118, -8)
+			if IsAddOnLoaded("AuroraClassic") then
+				local F = unpack(AuroraClassic)
+				F.SetBD(bg)
+			else
+				B.CreateBD(bg)
+				B.CreateSD(bg)
+				B.CreateTex(bg)
+			end
 
 			local bagToggle = B.CreateButton(self, 60, 20, BAGSLOT)
 			bagToggle:SetPoint("LEFT", SortButton, "RIGHT", 6, 0)
@@ -474,6 +442,8 @@ function module:OnLogin()
 	end
 
 	-- Fix Containter Bug
+	ToggleAllBags()
+	ToggleAllBags()
 	local function getRightFix() return f.bank:GetRight() end
 	BankFrame.GetRight = getRightFix
 

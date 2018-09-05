@@ -18,7 +18,7 @@ function Bar:CreateBar5()
 	else
 		frame.Pos = {"RIGHT", UIParent, "RIGHT", -1, 0}
 	end
-	frame:SetScale(cfg.scale)
+	frame:SetScale(NDuiDB["Actionbar"]["Scale"])
 
 	--move the buttons into position and reparent them
 	MultiBarLeft:SetParent(frame)
@@ -50,7 +50,7 @@ function Bar:CreateBar5()
 	end
 
 	--create the mouseover functionality
-	if NDuiDB["Actionbar"]["Bar5Fade"] then
+	if NDuiDB["Actionbar"]["Bar5Fade"] and cfg.fader then
 		B.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 end

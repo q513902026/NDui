@@ -13,7 +13,7 @@ local function ForceDefaultSettings()
 	SetCVar("ActionButtonUseKeyDown", 1)
 	--SetCVar("SpellQueueWindow", 250)
 	SetCVar("autoLootDefault", 1)
-	SetCVar("alwaysCompareItems", 0)
+	SetCVar("alwaysCompareItems", 1)
 	SetCVar("useCompactPartyFrames", 1)
 	SetCVar("lootUnderMouse", 1)
 	SetCVar("autoSelfCast", 1)
@@ -35,7 +35,7 @@ local function ForceDefaultSettings()
 	SetCVar("floatingCombatTextFloatMode", 1)
 	SetCVar("ffxGlow", 0)
 	SetCVar("autoQuestWatch", 1)
-	--SetCVar("overrideArchive", 0)
+	SetCVar("overrideArchive", 0)
 	SetCVar("WorldTextScale", 1.5)
 end
 
@@ -67,24 +67,6 @@ local function ForceUIScale()
 	else
 		SetCVar("uiScale", scale)
 	end
-
-	-- Restore from Auto-scaling
-	local function RestoreUIScale(scale)
-		UIParent:SetScale(scale)
-		if NDuiDB["Chat"]["Lock"] then
-			ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 28)
-		end
-	end
-
-	B:RegisterEvent("UI_SCALE_CHANGED", function()
-		if scale < .64 then RestoreUIScale(scale) end
-
-		C_Timer.After(1, function()
-			if scale < .64 and UIParent:GetScale() ~= scale then
-				RestoreUIScale(scale)
-			end
-		end)
-	end)
 end
 
 local function ForceChatSettings()
@@ -325,6 +307,7 @@ local function YesTutor()
 	tutor:SetScale(1.2)
 	B.CreateMF(tutor)
 	B.CreateBD(tutor)
+	B.CreateSD(tutor)
 	B.CreateTex(tutor)
 	B.CreateFS(tutor, 30, "NDui", true, "TOPLEFT", 10, 25)
 	local ll = CreateFrame("Frame", nil, tutor)
@@ -407,6 +390,7 @@ local function HelloWorld()
 	welcome:SetFrameStrata("HIGH")
 	B.CreateMF(welcome)
 	B.CreateBD(welcome)
+	B.CreateSD(welcome)
 	B.CreateTex(welcome)
 	B.CreateFS(welcome, 30, "NDui", true, "TOPLEFT", 10, 25)
 	B.CreateFS(welcome, 14, DB.Version, true, "TOPLEFT", 90, 12)
@@ -428,7 +412,6 @@ local function HelloWorld()
 		c1.." /hb "..c2..L["Help Info5"],
 		c1.." /mm "..c2..L["Help Info6"],
 		c1.." /rl "..c2..L["Help Info7"],
-		c1.." /kro "..c2..L["Help Info13"],
 		c1.." /ncl "..c2..L["Help Info9"],
 	}
 	for index, line in pairs(lines) do
@@ -438,7 +421,7 @@ local function HelloWorld()
 	B.CreateFS(welcome, 12, L["Help Info10"], false, "TOPLEFT", 20, -310)
 	B.CreateFS(welcome, 12, L["Help Info11"], false, "TOPLEFT", 20, -330)
 
-	local close = B.CreateButton(welcome, 20, 20, "X")
+	local close = B.CreateButton(welcome, 16, 16, "X")
 	close:SetPoint("TOPRIGHT", -10, -10)
 	close:SetScript("OnClick", function() welcome:Hide() end)
 

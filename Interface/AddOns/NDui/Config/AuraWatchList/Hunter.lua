@@ -6,6 +6,8 @@ local module = B:GetModule("AurasTable")
 local list = {
 	["Player Aura"] = {		-- 玩家光环组
 		{AuraID = 136, UnitID = "pet"},			-- 治疗宠物
+		{AuraID = 19577, UnitID = "pet"},		-- 胁迫
+		{AuraID = 160058, UnitID = "pet"},		-- 厚皮
 		{AuraID = 90361, UnitID = "player"},	-- 灵魂治愈
 		{AuraID = 35079, UnitID = "player"},	-- 误导
 		{AuraID = 61648, UnitID = "player"},	-- 变色龙守护
@@ -21,6 +23,7 @@ local list = {
 		{AuraID = 203924, UnitID = "player"},	-- 守护屏障
 		{AuraID = 197161, UnitID = "player"},	-- 灵龟守护回血
 		{AuraID = 160007, UnitID = "player"},	-- 上升气流（双头龙）
+		{AuraID = 231390, UnitID = "player", Combat = true},	-- 开拓者
 		{AuraID = 164273, UnitID = "player", Combat = true},	-- 独来独往
 	},
 	["Target Aura"] = {		-- 目标光环组
@@ -47,6 +50,7 @@ local list = {
 		{AuraID = 271049, UnitID = "target", Caster = "player"},	-- 动荡炸弹
 		{AuraID = 270332, UnitID = "target", Caster = "player"},	-- 信息素炸弹
 		{AuraID = 259277, UnitID = "target", Caster = "pet"},		-- 杀戮命令
+		{AuraID = 277959, UnitID = "target", Caster = "player"},	-- 稳固瞄准
 	},
 	["Special Aura"] = {	-- 玩家重要光环组
 		{AuraID = 19574, UnitID = "player"},	-- 狂野怒火
@@ -87,7 +91,7 @@ local list = {
 		{AuraID = 265898, UnitID = "player"},	-- 接战协定
 		{AuraID = 268552, UnitID = "player"},	-- 蝰蛇毒液
 		{AuraID = 260249, UnitID = "player"},	-- 掠食者
-		{AuraID = 257622, UnitID = "player"},	-- 技巧射击
+		{AuraID = 257622, UnitID = "player", Text = "A"},	-- 技巧射击
 	},
 	["Focus Aura"] = {		-- 焦点光环组
 		{AuraID = 3355, UnitID = "focus", Caster = "player"},	-- 冰冻陷阱
@@ -100,10 +104,7 @@ local list = {
 	["Spell Cooldown"] = {	-- 冷却计时组
 		{SlotID = 13, UnitID = "player"},		-- 饰品1
 		{SlotID = 14, UnitID = "player"},		-- 饰品2
-		{SpellID = 201430, UnitID = "player"},	-- 群兽奔腾
 		{SpellID = 186265, UnitID = "player"},	-- 灵龟守护
-		{SpellID = 193530, UnitID = "player"},	-- 野性守护
-		{SpellID = 193526, UnitID = "player"},	-- 百发百中
 		{SpellID = 147362, UnitID = "player"},	-- 反制射击
 	},
 }

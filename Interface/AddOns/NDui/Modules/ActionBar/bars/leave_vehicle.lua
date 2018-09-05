@@ -17,7 +17,7 @@ function Bar:CreateLeaveVehicle()
 	else
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -295, 95}
 	end
-	frame:SetScale(cfg.scale)
+	frame:SetScale(NDuiDB["Actionbar"]["Scale"])
 
 	--the button
 	local button = CreateFrame("CheckButton", "NDui_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
@@ -25,10 +25,12 @@ function Bar:CreateLeaveVehicle()
 	button:SetSize(cfg.size, cfg.size)
 	button:SetPoint("BOTTOMLEFT", frame, padding, padding)
 	button:RegisterForClicks("AnyUp")
-	button.icon:SetTexture("INTERFACE\\PLAYERACTIONBARALT\\NATURAL")
-	button.icon:SetTexCoord(.0859375, .1679688, .359375, .4414063)
+	button.icon:SetTexture("INTERFACE\\VEHICLES\\UI-Vehicles-Button-Exit-Up")
+	button.icon:SetTexCoord(.216, .784, .216, .784)
 	button:SetNormalTexture(nil)
-	button:GetHighlightTexture():SetColorTexture(1, 1, 1, .3)
+	button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+	button:GetPushedTexture():SetTexture(DB.textures.pushed)
+	B.CreateSD(button, 3, 3)
 
 	local function onClick(self)
 		if UnitOnTaxi("player") then TaxiRequestEarlyLanding() else VehicleExit() end

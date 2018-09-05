@@ -19,21 +19,24 @@ tinsert(C.themes["AuroraClassic"], function()
 
 	if AuroraConfig.tooltips then
 		F.CreateBD(QuestScrollFrame.StoryTooltip)
+		F.CreateSD(QuestScrollFrame.StoryTooltip)
 		F.CreateBD(QuestScrollFrame.WarCampaignTooltip)
+		F.CreateSD(QuestScrollFrame.WarCampaignTooltip)
 	end
 	F.ReskinScroll(QuestScrollFrame.ScrollBar)
 
 	for _, header in next, {campaignHeader, StoryHeader} do
 		header.Background:SetAlpha(0)
 		header.HighlightTexture:Hide()
+		header.Text:SetPoint("TOPLEFT", 15, -20)
 
 		local bg = F.CreateBDFrame(header, .25)
-		bg:SetPoint("TOPLEFT", 0, -1)
-		bg:SetPoint("BOTTOMRIGHT", -4, 0)
+		bg:SetPoint("TOPLEFT", 0, -14)
+		bg:SetPoint("BOTTOMRIGHT", -4, 5)
 		if header == campaignHeader then
 			local newTex = bg:CreateTexture(nil, "OVERLAY")
-			newTex:SetPoint("TOPRIGHT", -20, -5)
-			newTex:SetSize(50, 50)
+			newTex:SetPoint("TOPRIGHT", -25, -3)
+			newTex:SetSize(40, 40)
 			newTex:SetBlendMode("ADD")
 			newTex:SetAlpha(0)
 			header.newTex = newTex

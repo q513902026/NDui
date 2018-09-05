@@ -119,7 +119,7 @@ function UF:CreateHealthText(self)
 			self:Tag(hpval, "[DDG]")
 		end
 	elseif self.mystyle == "nameplate" then
-		hpval:SetPoint("RIGHT", self, "TOPRIGHT", 0, 3)
+		hpval:SetPoint("RIGHT", self, 0, 5)
 		self:Tag(hpval, "[nphp]")
 	else
 		self:Tag(hpval, "[hp]")
@@ -132,7 +132,7 @@ function UF:CreatePowerBar(self)
 	local power = CreateFrame("StatusBar", nil, self)
 	power:SetStatusBarTexture(DB.normTex)
 	if self.mystyle == "PlayerPlate" then
-		power:SetHeight(self:GetHeight())
+		power:SetHeight(NDuiDB["Nameplate"]["PPPHeight"])
 	else
 		power:SetHeight(retVal(self, 4, 3, 2, 4))
 	end
@@ -165,7 +165,7 @@ function UF:CreatePowerText(self)
 	local textFrame = CreateFrame("Frame", nil, self)
 	textFrame:SetAllPoints(self.Power)
 
-	local ppval = B.CreateFS(textFrame, retVal(self, 14, 13, 12), "", false, "RIGHT", -3, 2)
+	local ppval = B.CreateFS(textFrame, retVal(self, 13, 12, 12), "", false, "RIGHT", -3, 2)
 	self:Tag(ppval, "[color][power]")
 end
 
@@ -267,9 +267,11 @@ function UF:CreateCastBar(self)
 	cb:SetWidth(self:GetWidth() - 22)
 	cb:SetStatusBarTexture(DB.normTex)
 	cb:SetFrameLevel(1)
-	B.CreateBD(cb, .5, .1)
-	B.CreateSD(cb, 3, 3)
-	B.CreateTex(cb)
+
+	local bg = B.CreateBG(cb)
+	B.CreateBD(bg)
+	B.CreateSD(bg)
+	B.CreateTex(bg)
 
 	if self.mystyle == "player" then
 		cb:SetSize(unpack(C.UFs.PlayercbSize))
@@ -285,7 +287,7 @@ function UF:CreateCastBar(self)
 		cb:SetSize(self:GetWidth(), 10)
 	elseif self.mystyle == "nameplate" then
 		cb:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -5)
-		cb:SetSize(self:GetWidth(), 5)
+		cb:SetSize(self:GetWidth(), self:GetHeight())
 	end
 
 	cb.CastingColor = {.3, .7, 1}
@@ -331,8 +333,8 @@ function UF:CreateCastBar(self)
 		cb.Lag = lag
 		self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", cast.OnCastSent)
 	elseif self.mystyle == "nameplate" then
-		name:SetPoint("LEFT", cb, "BOTTOMLEFT", 0, -3)
-		timer:SetPoint("RIGHT", cb, "BOTTOMRIGHT", 0, -3)
+		name:SetPoint("LEFT", cb, 0, -5)
+		timer:SetPoint("RIGHT", cb, 0, -5)
 
 		local shield = cb:CreateTexture(nil, "OVERLAY")
 		shield:SetAtlas("nameplates-InterruptShield")
@@ -357,23 +359,26 @@ function UF:CreateCastBar(self)
 	self.Castbar = cb
 end
 
-function UF:CreateMirrorBar()
-	for _, bar in pairs({"MirrorTimer1", "MirrorTimer2", "MirrorTimer3"}) do   
-		_G[bar]:GetRegions():Hide()
-		_G[bar.."Border"]:Hide()
-		_G[bar]:SetParent(UIParent)
-		_G[bar]:SetScale(1)
-		_G[bar]:SetHeight(15)
-		_G[bar]:SetWidth(280)
-		_G[bar.."Background"] = _G[bar]:CreateTexture(bar.."Background", "BACKGROUND", _G[bar])
-		_G[bar.."Background"]:SetTexture(DB.normTex)
-		_G[bar.."Background"]:SetAllPoints(bar)
-		_G[bar.."Background"]:SetVertexColor(0, 0, 0, .5)
-		_G[bar.."Text"]:SetFont(unpack(DB.Font))
-		_G[bar.."Text"]:ClearAllPoints()
-		_G[bar.."Text"]:SetPoint("CENTER")
-		_G[bar.."StatusBar"]:SetAllPoints(_G[bar])
-		B.CreateSD(_G[bar], 3, 3)
+function UF:ReskinMirrorBars()
+	local previous
+	for i = 1, 3 do
+		local bar = _G["MirrorTimer"..i]
+		B.StripTextures(bar, true)
+		bar:SetSize(280, 15)
+
+		local bg = B.CreateBG(bar, 1)
+		B.CreateBD(bg)
+		B.CreateSD(bg)
+		B.CreateTex(bg)
+
+		local statusbar = _G["MirrorTimer"..i.."StatusBar"]
+		statusbar:SetAllPoints()
+		statusbar:SetStatusBarTexture(DB.normTex)
+
+		if previous then
+			bar:SetPoint("TOP", previous, "BOTTOM", 0, -5)
+		end
+		previous = bar
 	end
 end
 
@@ -392,7 +397,7 @@ local function postCreateIcon(element, button)
 	button.overlay:SetTexture(nil)
 
 	button.HL = button:CreateTexture(nil, "HIGHLIGHT")
-	button.HL:SetColorTexture(1, 1, 1, .3)
+	button.HL:SetColorTexture(1, 1, 1, .25)
 	button.HL:SetAllPoints()
 end
 
@@ -441,7 +446,7 @@ local function postUpdateGapIcon(_, _, icon)
 	end
 end
 
-local function customFilter(element, unit, button, name, _, _, _, _, _, caster, _, _, spellID, _, _, _, nameplateShowAll)
+local function customFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
 	local style = element.__owner.mystyle
 	if name and spellID == 209859 then
 		element.bolster = element.bolster + 1
@@ -458,10 +463,12 @@ local function customFilter(element, unit, button, name, _, _, _, _, _, caster, 
 	elseif style == "nameplate" then
 		if UnitIsUnit("player", unit) then
 			return false
-		elseif C.WhiteList and C.WhiteList[spellID] then
-			return true
 		elseif C.BlackList and C.BlackList[spellID] then
 			return false
+		elseif element.showStealableBuffs and isStealable and not UnitIsPlayer(unit) then
+			return true
+		elseif C.WhiteList and C.WhiteList[spellID] then
+			return true
 		else
 			return (NDuiDB["Nameplate"]["AllAuras"] and nameplateShowAll) or (caster == "player" or caster == "pet" or caster == "vehicle")
 		end
@@ -610,9 +617,21 @@ local function postUpdateClassPower(element, cur, max, diff, powerType, event)
 	end
 end
 
+local function postUpdateRunes(element, runemap)
+	for index, runeID in next, runemap do
+		local rune = element[index]
+		local runeReady = select(3, GetRuneCooldown(runeID))
+		if rune:IsShown() and not runeReady then
+			rune:SetAlpha(.6)
+		else
+			rune:SetAlpha(1)
+		end
+	end
+end
+
 function UF:CreateClassPower(self)
 	if self.mystyle == "PlayerPlate" then
-		width, height = self:GetWidth(), self:GetHeight()*2 + 3
+		width, height = self:GetWidth(), (self:GetHeight()+self.Power:GetHeight())
 		C.UFs.BarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
 	end
 
@@ -646,7 +665,8 @@ function UF:CreateClassPower(self)
 
 	if DB.MyClass == "DEATHKNIGHT" then
 		bars.colorSpec = true
-		if NDuiDB["UFs"]["SortRunes"] then bars.sortOrder = "asc" end
+		bars.sortOrder = "asc"
+		bars.PostUpdate = postUpdateRunes
 		self.Runes = bars
 	else
 		bars.PostUpdate = postUpdateClassPower
@@ -672,8 +692,8 @@ function UF:CreateAltPower(self)
 	bar:SetStatusBarTexture(DB.normTex)
 	bar:SetPoint("TOP", self.Power, "BOTTOM", 0, -3)
 	bar:SetSize(self:GetWidth(), 2)
-	B.CreateBD(bar, .5, .1)
-	B.CreateSD(bar, 3, 3)
+	B.CreateBD(bar, .5)
+	B.CreateSD(bar)
 
 	local text = B.CreateFS(bar, 14, "")
 	text:SetJustifyH("CENTER")

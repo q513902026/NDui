@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="Skins.lua"/>
-	<Script file="FontStyle.lua"/>
 	<Script file="MicroMenu.lua"/>
 	<Script file="ObjectiveTracker.lua"/>
 	<Script file="RaidManager.lua"/>
@@ -8,8 +7,6 @@
 
 	<Script file="AddOns\Bigwigs.lua"/>
 	<Script file="AddOns\DBM.lua"/>
-	<Script file="AddOns\ExtraCD.lua"/>
-	<Script file="AddOns\RCLootCoucil.lua"/>
 	<Script file="AddOns\Skada.lua"/>
 	<Script file="AddOns\TMW.lua"/>
 	<Script file="AddOns\WeakAuras.lua"/>

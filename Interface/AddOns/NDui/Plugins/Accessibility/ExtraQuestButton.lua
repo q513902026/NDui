@@ -8,28 +8,25 @@ local B, C, L, DB = unpack(ns)
 local questAreas = {
 	-- Global
 	[24629] = true,
-
 	-- Icecrown
-	[14108] = 541,
-
+	[14108] = 170,
 	-- Northern Barrens
 	[13998] = 11,
-
 	-- Un'Goro Crater
-	[24735] = 201,
-
+	[24735] = 78,
 	-- Darkmoon Island
-	[29506] = 823,
-	[29510] = 823,
-
+	[29506] = 407,
+	[29510] = 407,
+	[29515] = 407,
+	[29516] = 407,
+	[29517] = 407,
 	-- Mulgore
-	[24440] = 9,
-	[14491] = 9,
-	[24456] = 9,
-	[24524] = 9,
-
+	[24440] = 7,
+	[14491] = 7,
+	[24456] = 7,
+	[24524] = 7,
 	-- Mount Hyjal
-	[25577] = 606,
+	[25577] = 198,
 }
 
 -- Quests items with incorrect or missing quest area blobs
@@ -38,56 +35,44 @@ local itemAreas = {
 	[34862] = true,
 	[34833] = true,
 	[39700] = true,
-
 	-- Deepholm
-	[58167] = 640,
-	[60490] = 640,
-
+	[58167] = 207,
+	[60490] = 207,
 	-- Ashenvale
-	[35237] = 43,
-
+	[35237] = 63,
 	-- Thousand Needles
-	[56011] = 61,
-
+	[56011] = 64,
 	-- Tanaris
-	[52715] = 161,
-
+	[52715] = 71,
 	-- The Jade Forest
-	[84157] = 806,
-	[89769] = 806,
-
+	[84157] = 371,
+	[89769] = 371,
 	-- Hellfire Peninsula
-	[28038] = 465,
-	[28132] = 465,
-
+	[28038] = 100,
+	[28132] = 100,
 	-- Borean Tundra
-	[35352] = 486,
-	[34772] = 486,
-	[34711] = 486,
-	[35288] = 486,
-	[34782] = 486,
-
+	[35352] = 114,
+	[34772] = 114,
+	[34711] = 114,
+	[35288] = 114,
+	[34782] = 114,
 	-- Zul'Drak
-	[41161] = 496,
-	[39157] = 496,
-	[39206] = 496,
-	[39238] = 496,
-	[39664] = 496,
-	[38699] = 496,
-	[41390] = 496,
-
+	[41161] = 121,
+	[39157] = 121,
+	[39206] = 121,
+	[39238] = 121,
+	[39664] = 121,
+	[38699] = 121,
+	[41390] = 121,
 	-- Dalaran (Broken Isles)
-	[129047] = 1014,
-
+	[129047] = 625,
 	-- Stormheim
-	[128287] = 1017,
-	[129161] = 1017,
-
+	[128287] = 634,
+	[129161] = 634,
 	-- Azsuna
-	[118330] = 1015,
-
+	[118330] = 630,
 	-- Suramar
-	[133882] = 1033,
+	[133882] = 680,
 }
 
 local ExtraQuestButton = CreateFrame("Button", "ExtraQuestButton", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate")
@@ -130,7 +115,7 @@ local onAttributeChanged = [[
 ]]
 
 function ExtraQuestButton:BAG_UPDATE_COOLDOWN()
-	if(self:IsShown() and self:IsEnabled()) then
+	if(self:IsShown() and self:IsEnabled() and self.itemID) then
 		local start, duration = GetItemCooldown(self.itemID)
 		if(duration > 0) then
 			self.Cooldown:SetCooldown(start, duration)
@@ -151,9 +136,11 @@ function ExtraQuestButton:BAG_UPDATE_DELAYED()
 end
 
 function ExtraQuestButton:PLAYER_REGEN_ENABLED(event)
-	self:SetAttribute("item", self.attribute)
-	self:UnregisterEvent(event)
-	self:BAG_UPDATE_COOLDOWN()
+	if(self.itemID) then
+		self:SetAttribute("item", "item:" .. self.itemID)
+		self:UnregisterEvent(event)
+		self:BAG_UPDATE_COOLDOWN()
+	end
 end
 
 function ExtraQuestButton:UPDATE_BINDINGS()
@@ -194,7 +181,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	B.CreateSD(self, 3, 3)
 	self.Shadow:SetFrameLevel(self:GetFrameLevel())
 	self.HL = self:CreateTexture(nil, "HIGHLIGHT")
-	self.HL:SetColorTexture(1, 1, 1, .3)
+	self.HL:SetColorTexture(1, 1, 1, .25)
 	self.HL:SetAllPoints(Icon)
 	self.Icon = Icon
 
@@ -213,10 +200,10 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	Cooldown:Hide()
 	self.Cooldown = Cooldown
 
-	local Artwork = self:CreateTexture("$parentArtwork", "BACKGROUND")
-	Artwork:SetPoint("CENTER", -2, 0)
-	Artwork:SetSize(240, 120)
-	Artwork:SetTexture([[Interface\ExtraButton\Smash]])
+	local Artwork = self:CreateTexture("$parentArtwork", "ARTWORK")
+	Artwork:SetPoint("BOTTOMLEFT", -1, -3)
+	Artwork:SetSize(20, 20)
+	Artwork:SetTexture(DB.questTex)
 	self.Artwork = Artwork
 
 	self:RegisterEvent("UPDATE_BINDINGS")
@@ -226,6 +213,8 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	self:RegisterEvent("QUEST_POI_UPDATE")
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED")
 	self:RegisterEvent("QUEST_ACCEPTED")
+	self:RegisterEvent("ZONE_CHANGED")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 end
 
 local worldQuests = {}
@@ -260,6 +249,7 @@ ExtraQuestButton:SetScript("OnUpdate", function(self, elapsed)
 
 	if(self.rangeTimer > TOOLTIP_UPDATE_TIME) then
 		local HotKey = self.HotKey
+		local Icon = self.Icon
 
 		-- BUG: IsItemInRange() is broken versus friendly npcs (and possibly others)
 		local inRange = IsItemInRange(self.itemLink, "target")
@@ -267,17 +257,21 @@ ExtraQuestButton:SetScript("OnUpdate", function(self, elapsed)
 			if(inRange == false) then
 				HotKey:SetTextColor(1, .1, .1)
 				HotKey:Show()
+				Icon:SetVertexColor(1, .1, .1)
 			elseif(inRange) then
 				HotKey:SetTextColor(.6, .6, .6)
 				HotKey:Show()
+				Icon:SetVertexColor(1, 1, 1)
 			else
 				HotKey:Hide()
 			end
 		else
 			if(inRange == false) then
 				HotKey:SetTextColor(1, .1, .1)
+				Icon:SetVertexColor(1, .1, .1)
 			else
 				HotKey:SetTextColor(.6, .6, .6)
+				Icon:SetVertexColor(1, 1, 1)
 			end
 		end
 
@@ -297,7 +291,6 @@ end)
 ExtraQuestButton:SetScript("OnEnable", function(self)
 	RegisterStateDriver(self, "visible", visibilityState)
 	self:SetAttribute("_onattributechanged", onAttributeChanged)
-	self.Artwork:SetTexture([[Interface\ExtraButton\Smash]])
 	self:Update()
 	self:SetItem()
 end)
@@ -310,7 +303,6 @@ ExtraQuestButton:SetScript("OnDisable", function(self)
 	RegisterStateDriver(self, "visible", "show")
 	self:SetAttribute("_onattributechanged", nil)
 	self.Icon:SetTexture([[Interface\Icons\INV_Misc_Wrench_01]])
-	self.Artwork:SetTexture([[Interface\ExtraButton\Ultraxion]])
 	self.HotKey:Hide()
 end)
 
@@ -333,9 +325,8 @@ function ExtraQuestButton:SetItem(itemLink, texture)
 			return
 		end
 
-		local itemID, itemName = string.match(itemLink, "|Hitem:(.-):.-|h%[(.+)%]|h")
+		local itemID = string.match(itemLink, "|Hitem:(.-):.-|h%[(.+)%]|h")
 		self.itemID = tonumber(itemID)
-		self.itemName = itemName
 		self.itemLink = itemLink
 
 		if(blacklist[itemID]) then
@@ -343,31 +334,32 @@ function ExtraQuestButton:SetItem(itemLink, texture)
 		end
 	end
 
-	local HotKey = self.HotKey
-	local key = GetBindingKey("EXTRAACTIONBUTTON1")
-	if(key) then
-		HotKey:SetText(GetBindingText(key, 1))
-		HotKey:Show()
-	elseif(ItemHasRange(itemLink)) then
-		HotKey:SetText(RANGE_INDICATOR)
-		HotKey:Show()
-	else
-		HotKey:Hide()
-	end
-	if NDuiDB["Actionbar"]["Enable"] then B.UpdateHotKey(self) end
+	if(self.itemID) then
+		local HotKey = self.HotKey
+		local key = GetBindingKey("EXTRAACTIONBUTTON1")
+		if(key) then
+			HotKey:SetText(GetBindingText(key, 1))
+			HotKey:Show()
+		elseif(ItemHasRange(itemLink)) then
+			HotKey:SetText(RANGE_INDICATOR)
+			HotKey:Show()
+		else
+			HotKey:Hide()
+		end
+		if NDuiDB["Actionbar"]["Enable"] then B.UpdateHotKey(self) end
 
-	if(InCombatLockdown()) then
-		self.attribute = self.itemName
-		self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	else
-		self:SetAttribute("item", self.itemName)
-		self:BAG_UPDATE_COOLDOWN()
+		if(InCombatLockdown()) then
+			self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		else
+			self:SetAttribute("item", "item:" .. self.itemID)
+			self:BAG_UPDATE_COOLDOWN()
+		end
 	end
 end
 
 function ExtraQuestButton:RemoveItem()
 	if(InCombatLockdown()) then
-		self.attribute = nil
+		self.itemID = nil
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	else
 		self:SetAttribute("item", nil)
@@ -390,7 +382,7 @@ local function GetClosestQuestItem()
 			end
 
 			local _, _, _, _, _, isComplete = GetQuestLogTitle(questLogIndex)
-			if(areaID and (type(areaID) == "boolean" or areaID == GetCurrentMapAreaID())) then
+			if(areaID and (type(areaID) == "boolean" or areaID == C_Map.GetBestMapForUnit("player"))) then
 				closestQuestLink = itemLink
 				closestQuestTexture = texture
 			elseif(not isComplete or (isComplete and showCompleted)) then
@@ -417,7 +409,7 @@ local function GetClosestQuestItem()
 						areaID = itemAreas[tonumber(string.match(itemLink, "item:(%d+)"))]
 					end
 
-					if(areaID and (type(areaID) == "boolean" or areaID == GetCurrentMapAreaID())) then
+					if(areaID and (type(areaID) == "boolean" or areaID == C_Map.GetBestMapForUnit("player"))) then
 						closestQuestLink = itemLink
 						closestQuestTexture = texture
 					elseif(not isComplete or (isComplete and showCompleted)) then
@@ -446,7 +438,7 @@ local function GetClosestQuestItem()
 						areaID = itemAreas[tonumber(string.match(itemLink, "item:(%d+)"))]
 					end
 
-					if(areaID and (type(areaID) == "boolean" or areaID == GetCurrentMapAreaID())) then
+					if(areaID and (type(areaID) == "boolean" or areaID == C_Map.GetBestMapForUnit("player"))) then
 						closestQuestLink = itemLink
 						closestQuestTexture = texture
 					elseif(not isComplete or (isComplete and showCompleted)) then

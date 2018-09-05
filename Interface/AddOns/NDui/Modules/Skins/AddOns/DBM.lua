@@ -30,7 +30,7 @@ function module:DBMSkin()
 					backdroptex:SetPoint("TOPLEFT", icon1.overlay, "TOPLEFT", 1, -1)
 					backdroptex:SetPoint("BOTTOMRIGHT", icon1.overlay, "BOTTOMRIGHT", -1, 1)
 					backdroptex:SetTexCoord(unpack(DB.TexCoord))
-					B.CreateSD(icon1.overlay, 2, 3)
+					B.CreateSD(icon1.overlay)
 				end
 
 				if not (icon2.overlay) then
@@ -43,7 +43,7 @@ function module:DBMSkin()
 					backdroptex:SetPoint("TOPLEFT", icon2.overlay, "TOPLEFT", 1, -1)
 					backdroptex:SetPoint("BOTTOMRIGHT", icon2.overlay, "BOTTOMRIGHT", -1, 1)
 					backdroptex:SetTexCoord(unpack(DB.TexCoord))		
-					B.CreateSD(icon2.overlay, 2, 3)
+					B.CreateSD(icon2.overlay)
 				end
 
 				if bar.color then
@@ -152,18 +152,21 @@ function module:DBMSkin()
 
 	local function SkinRange()
 		if DBMRangeCheckRadar and not DBMRangeCheckRadar.styled then
-			local bg = B.CreateBG(DBMRangeCheckRadar, 2)
+			local bg = B.CreateBG(DBMRangeCheckRadar, 1)
 			B.CreateBD(bg, .3)
+			B.CreateSD(bg)
 			B.CreateTex(bg)
 
 			DBMRangeCheckRadar.styled = true
 		end
 
 		if DBMRangeCheck and not DBMRangeCheck.styled then
-			B.CreateBD(DBMRangeCheck)
-			B.CreateTex(DBMRangeCheck)
-			DBMRangeCheck.SetBackdropColor = B.Dummy
-			DBMRangeCheck.SetBackdropBorderColor = B.Dummy
+			DBMRangeCheck:SetBackdrop(nil)
+			local bg = B.CreateBG(DBMRangeCheck, 0)
+			B.CreateBD(bg)
+			B.CreateSD(bg)
+			B.CreateTex(bg)
+			DBMRangeCheck.tipStyled = true
 
 			DBMRangeCheck.styled = true
 		end
@@ -174,11 +177,13 @@ function module:DBMSkin()
 		DBM.InfoFrame:Show(5, "test")
 		DBM.InfoFrame:Hide()
 		DBMInfoFrame:HookScript("OnShow", function(self)
-			if not self.Tex then
-				B.CreateBD(self, .6, 3)
-				B.CreateTex(self)
-				self.SetBackdropColor = B.Dummy
-				self.SetBackdropBorderColor = B.Dummy
+			if not self.bg then
+				self:SetBackdrop(nil)
+				self.bg = B.CreateBG(self, 0)
+				B.CreateBD(self.bg, .6, 3)
+				B.CreateSD(self.bg)
+				B.CreateTex(self.bg)
+				DBMInfoFrame.tipStyled = true
 			end
 		end)
 	end

@@ -3,16 +3,23 @@ local B, C, L, DB = unpack(ns)
 if DB.Client ~= "zhCN" then return end
 
 local hx = {
-	"自动修理修正；",
-	"AuroraClassic部分模块调整；",
-	"yClassColor战场信息模块修正；",
-	"PVP荣誉页面的图标不再显示冷却；",
-	"界面元素的拖动现在允许超出屏幕；",
-	"修复按专精保存团队框体位置的选项；",
-	"快速举报的功能修复；",
-	"oUF库及施法条调整；",
-	"你可以在控制台关闭密语的异色；",
-	"重新做了图腾条，应该可以正常摧毁了。",
+	"AuroraClassic更新至1.8.11；",
+	"更新技能及团本法术监控；",
+	"添加动作条缩放选项；",
+	"优化SHIFT+左键复制名字的功能；",
+	"公会信息条的复制及邀请跟随快捷键；",
+	"订单及补给需求的世界任务不再通报；",
+	"添加选项只播放任务完成的提示音；",
+	"萨满，痛苦术及射击猎的职业助手调整；",
+	"聊天过滤更新，屏蔽WQT的自动邀请；",
+	"在交易窗口上显示目标信息；",
+	"界面美化更新，移除ExtraCD插件美化；",
+	"姓名板调整；",
+	"打断及技能监控触发器等支持宠物来源；",
+	"打断提示默认只在非随机的副本中生效；",
+	"移除工程移形换影装置通报的功能；",
+	"控制台及本地文本更新；",
+	"部分潜在的污染修正。",
 }
 
 local f
@@ -25,9 +32,10 @@ local function changelog()
 	f:SetFrameStrata("HIGH")
 	B.CreateMF(f)
 	B.CreateBD(f)
+	B.CreateSD(f)
 	B.CreateTex(f)
-	B.CreateFS(f, 30, "NDui", true, "TOPLEFT", 10, 25)
-	B.CreateFS(f, 14, DB.Version, true, "TOPLEFT", 90, 12)
+	B.CreateFS(f, 30, "NDui", true, "TOPLEFT", 10, 26)
+	B.CreateFS(f, 14, DB.Version, true, "TOPLEFT", 90, 14)
 	B.CreateFS(f, 16, L["Changelog"], true, "TOP", 0, -10)
 	local ll = CreateFrame("Frame", nil, f)
 	ll:SetPoint("TOP", -50, -35)
@@ -43,7 +51,7 @@ local function changelog()
 		offset = offset + 20
 	end
 	f:SetSize(400, 60 + offset)
-	local close = B.CreateButton(f, 20, 20, "X")
+	local close = B.CreateButton(f, 16, 16, "X")
 	close:SetPoint("TOPRIGHT", -10, -10)
 	close:SetScript("OnClick", function() f:Hide() end)
 end
