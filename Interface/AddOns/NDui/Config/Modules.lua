@@ -34,13 +34,14 @@ C.UFs = {
 	Focuscb			= {"CENTER", UIParent, "CENTER", 350, 195},			-- 焦点施法条默认位置
 	FocuscbSize		= {200, 20},										-- 焦点施法条尺寸
 
+
 	PlayerPos		= {"CENTER", UIParent, "CENTER", -239, -195},		-- 玩家框体默认位置
 	TargetPos		= {"CENTER", UIParent, "CENTER", 239, -195},		-- 目标框体默认位置
 	ToTPos			= {"CENTER", UIParent, "CENTER", 300, -163},			-- 目标的目标框体默认位置
 	PetPos			= {"CENTER", UIParent, "CENTER", -300, -163},		-- 宠物框体默认位置
 	FocusPos		= {"CENTER", UIParent, "CENTER", 350, 170},				-- 焦点框体默认位置
 	FoTPos			= {"CENTER", UIParent, "CENTER", 390, 145},			-- 焦点目标框体默认位置
-	PlayerPlate		= {"BOTTOM", UIParent, "BOTTOM", 0, 280},			-- 玩家姓名板默认位置
+	PlayerPlate		= {"BOTTOM", UIParent, "BOTTOM", 0, 310},			-- 玩家姓名板默认位置
 
 	BarPoint		= {"TOPLEFT", 12, 4},								-- 资源条位置（以自身头像为基准）
 	BarSize			= {150, 5},											-- 资源条的尺寸（宽，长）

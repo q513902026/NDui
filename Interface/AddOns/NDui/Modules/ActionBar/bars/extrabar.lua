@@ -45,11 +45,11 @@ function Bar:CreateExtrabar()
 	ZoneAbilityFrame:ClearAllPoints()
 	ZoneAbilityFrame.ignoreFramePositionManager = true
 	ZoneAbilityFrameNormalTexture:SetAlpha(0)
-	B.Mover(ZoneAbilityFrame, L["Zone Ability"], "ZoneAbility",  {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 410, 145}, 64, 64)
+	B.Mover(ZoneAbilityFrame, L["Zone Ability"], "ZoneAbility", {"BOTTOM", UIParent, "BOTTOM", -250, 100}, 64, 64)
 
 	local spellButton = ZoneAbilityFrame.SpellButton
 	spellButton.Style:SetAlpha(0)
-	spellButton.Icon:SetTexCoord(.08, .92, .08, .92)
+	spellButton.Icon:SetTexCoord(unpack(DB.TexCoord))
 	spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 	B.CreateSD(spellButton.Icon, 3, 3)
 end

@@ -325,20 +325,26 @@ local optionList = {		-- type, key, value, name, horizon, doubleline
 		{1, "Nameplate", "Enable", "|cff00cc4c"..L["Enable Nameplate"]},
 		{},--blank
 		{1, "Nameplate", "CustomUnitColor", "|cff00cc4c"..L["CustomUnitColor"]},
-		{1, "Nameplate", "ShowUnitPower", "|cff70c0f5"..L["ShowUnitPower"], true},
+		{5, "Nameplate", "CustomColor", L["Custom Color"], 2},
 		{2, "Nameplate", "UnitList", L["UnitColor List"]},
 		{2, "Nameplate", "ShowPowerList", L["ShowPowerList"], true},
 		{},--blank
-		{1, "Nameplate", "ColorBorder", L["Auras Border"]},
-		{1, "Nameplate", "AllAuras", L["Show All Auras"], true},
-		{3, "Nameplate", "maxAuras", L["Max Auras"], false, {0, 10, 0}},
-		{3, "Nameplate", "AuraSize", L["Auras Size"], true, {18, 40, 0}},
+		{1, "Nameplate", "TankMode", "|cff00cc4c"..L["Tank Mode"]},
+		{1, "Nameplate", "DPSRevertThreat", L["DPS Revert Threat"], true},
+		{5, "Nameplate", "SecureColor", L["Secure Color"]},
+		{5, "Nameplate", "TransColor", L["Trans Color"], 1},
+		{5, "Nameplate", "InsecureColor", L["Insecure Color"], 2},
+		{},--blank
 		{1, "Nameplate", "FriendlyCC", L["Friendly CC"]},
 		{1, "Nameplate", "HostileCC", L["Hostile CC"], true},
-		{1, "Nameplate", "TankMode", L["Tank Mode"]},
-		{1, "Nameplate", "Arrow", L["Show Arrow"], true},
+		{1, "Nameplate", "Arrow", L["Show Arrow"]},
+		{1, "Nameplate", "HighlightIndicator", L["Show HighlightIndicator"], true},
 		{1, "Nameplate", "QuestIcon", L["Nameplate QuestIcon"]},
-		{1, "Nameplate", "InsideView", L["Nameplate InsideView"], true},
+		{1, "Nameplate", "ColorBorder", L["Auras Border"], true},
+		{1, "Nameplate", "InsideView", L["Nameplate InsideView"]},
+		{1, "Nameplate", "FullHealth", L["Show FullHealth"], true},
+		{3, "Nameplate", "maxAuras", L["Max Auras"], false, {0, 10, 0}},
+		{3, "Nameplate", "AuraSize", L["Auras Size"], true, {18, 40, 0}},
 		{3, "Nameplate", "VerticalSpacing", L["NP VerticalSpacing"], false, {.5, 1.5, 1}},
 		{3, "Nameplate", "Distance", L["Nameplate Distance"], true, {20, 100, 0}},
 		{3, "Nameplate", "Width", L["NP Width"], false, {50, 150, 0}},
@@ -375,6 +381,7 @@ local optionList = {		-- type, key, value, name, horizon, doubleline
 		{1, "Misc", "OnlyCompleteRing", L["OnlyCompleteRing"], true},
 		{},--blank
 		{1, "Misc", "Interrupt", "|cff00cc4c"..L["Interrupt Alert"]},
+		{1, "Misc", "BrokenSpell", L["Broken Spell"], true},
 		{1, "Misc", "OwnInterrupt", L["Own Interrupt"]},
 		{1, "Misc", "AlertInInstance", L["Alert In Instance"], true},
 		{},--blank
@@ -417,8 +424,7 @@ local optionList = {		-- type, key, value, name, horizon, doubleline
 		{1, "Skins", "ClassLine", L["ClassColor Line"]},
 		{},--blank
 		{1, "Skins", "MicroMenu", L["Micromenu"]},
-		{1, "Skins", "TrackerSkin", L["ObjectiveTracker Skin"], true},
-		{1, "Skins", "PetBattle", L["PetBattle Skin"]},
+		{1, "Skins", "PetBattle", L["PetBattle Skin"], true},
 		{},--blank
 		{1, "Skins", "DBM", L["DBM Skin"]},
 		{1, "Skins", "Skada", L["Skada Skin"], true},
@@ -429,17 +435,16 @@ local optionList = {		-- type, key, value, name, horizon, doubleline
 	[11] = {
 		{1, "Tooltip", "CombatHide", L["Hide Tooltip"]},
 		{1, "Tooltip", "Cursor", L["Follow Cursor"]},
-		{1, "Tooltip", "ClassColor", L["Classcolor Border"], true},
-		{3, "Tooltip", "Scale", L["Tooltip Scale"], false, {.5, 1.5, 1}},
+		{1, "Tooltip", "ClassColor", L["Classcolor Border"]},
+		{3, "Tooltip", "Scale", L["Tooltip Scale"], true, {.5, 1.5, 1}},
 		{},--blank
-		{1, "Tooltip", "HideTitle", L["Hide Title"]},
-		{1, "Tooltip", "HideRealm", L["Hide Realm"], true},
 		{1, "Tooltip", "HideRank", L["Hide Rank"]},
 		{1, "Tooltip", "HidePVP", L["Hide PVP"], true},
 		{1, "Tooltip", "HideFaction", L["Hide Faction"]},
 		{1, "Tooltip", "FactionIcon", L["FactionIcon"], true},
 		{1, "Tooltip", "LFDRole", L["Group Roles"]},
 		{1, "Tooltip", "TargetBy", L["Show TargetedBy"], true},
+		{1, "Tooltip", "AzeriteArmor", L["Show AzeriteArmor"]},
 	},
 	[12] = {
 		{1, "Misc", "Mail", L["Mail Tool"]},
@@ -490,8 +495,7 @@ local function CreateTab(parent, i, name)
 	tab:SetPoint("TOPLEFT", 20, -30*i - 20)
 	tab:SetSize(130, 28)
 	B.CreateBD(tab, .3)
-	local label = B.CreateFS(tab, 15, name, false, "LEFT", 10, 0)
-	label:SetTextColor(1, .8, 0)
+	B.CreateFS(tab, 15, name, "system", "LEFT", 10, 0)
 
 	tab:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK)
@@ -554,8 +558,7 @@ local function CreateOption(i)
 			end)
 			eb:SetScript("OnLeave", GameTooltip_Hide)
 
-			local label = B.CreateFS(eb, 14, name, false, "CENTER", 0, 25)
-			label:SetTextColor(1, .8, 0)
+			B.CreateFS(eb, 14, name, "system", "CENTER", 0, 25)
 		-- Slider
 		elseif type == 3 then
 			local min, max, step = unpack(data)
@@ -575,8 +578,7 @@ local function CreateOption(i)
 				_G[s:GetName().."Text"]:SetText(current)
 			end)
 
-			local label = B.CreateFS(s, 14, name, false, "CENTER", 0, 25)
-			label:SetTextColor(1, .8, 0)
+			B.CreateFS(s, 14, name, "system", "CENTER", 0, 25)
 			_G[s:GetName().."Low"]:SetText(min)
 			_G[s:GetName().."High"]:SetText(max)
 			_G[s:GetName().."Text"]:ClearAllPoints()
@@ -620,20 +622,46 @@ local function CreateOption(i)
 				end)
 			end
 
-			local label = B.CreateFS(dd, 14, name, false, "CENTER", 0, 25)
-			label:SetTextColor(1, .8, 0)
-		-- String
+			B.CreateFS(dd, 14, name, "system", "CENTER", 0, 25)
+		-- Colorswatch
 		elseif type == 5 then
-			local fs = parent:CreateFontString(nil, "OVERLAY")
-			fs:SetFont(DB.Font[1], 14, DB.Font[3])
-			fs:SetText(name)
-			fs:SetTextColor(1, .8, 0)
+			local f = CreateFrame("Button", nil, parent)
+			local width = 25 + (horizon or 0)*155
 			if horizon then
-				fs:SetPoint("TOPLEFT", 335, -offset + 30)
+				f:SetPoint("TOPLEFT", width, -offset + 30)
 			else
-				fs:SetPoint("TOPLEFT", 25, -offset - 5)
+				f:SetPoint("TOPLEFT", width, -offset - 5)
 				offset = offset + 35
 			end
+			f:SetSize(18, 18)
+			B.CreateBD(f, 1)
+			B.CreateFS(f, 14, name, false, "LEFT", 26, 0)
+
+			local tex = f:CreateTexture()
+			tex:SetPoint("TOPLEFT", 2, -2)
+			tex:SetPoint("BOTTOMRIGHT", -2, 2)
+			tex:SetColorTexture(NDuiDB[key][value].r, NDuiDB[key][value].g, NDuiDB[key][value].b)
+
+			local function onUpdate()
+				local r, g, b = ColorPickerFrame:GetColorRGB()
+				tex:SetColorTexture(r, g, b)
+				NDuiDB[key][value].r, NDuiDB[key][value].g, NDuiDB[key][value].b = r, g, b
+			end
+
+			local function onCancel()
+				local r, g, b = ColorPicker_GetPreviousValues()
+				tex:SetColorTexture(r, g, b)
+				NDuiDB[key][value].r, NDuiDB[key][value].g, NDuiDB[key][value].b = r, g, b
+			end
+
+			f:SetScript("OnClick", function()
+				local r, g, b = NDuiDB[key][value].r, NDuiDB[key][value].g, NDuiDB[key][value].b
+				ColorPickerFrame.func = onUpdate
+				ColorPickerFrame.previousValues = {r = r, g = g, b = b}
+				ColorPickerFrame.cancelFunc = onCancel
+				ColorPickerFrame:SetColorRGB(r, g, b)
+				ColorPickerFrame:Show()
+			end)
 		-- Blank, no type
 		else
 			local l = CreateFrame("Frame", nil, parent)
