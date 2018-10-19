@@ -3,30 +3,20 @@ local B, C, L, DB = unpack(ns)
 if DB.Client ~= "zhCN" then return end
 
 local hx = {
-	"AuroraClassic更新至1.9.4；",
+	"AuroraClassic更新至1.10.6；",
 	"更新技能及团本法术监控；",
-	"考古统计修正；",
-	"信息条印记统计支持新好运币；",
-	"更新自动交互的忽略列表；",
-	"优化打断驱散等的通报表现；",
-	"添加控场技能打破的通报；",
-	"取消聊天框中对AFK/DND等的信息调整；",
-	"调整大米公会记录对AngryKeystones的支持；",
-	"鼠标提示信息调整；",
-	"添加艾泽里特护甲特质信息的显示；",
-	"更新oUF核心；",
-	"调整竞技场准备阶段的目标框体；",
-	"聊天窗口的相关元素调整；",
-	"修正分辨率调整后聊天框体错位的问题；",
-	"BUFF检查添加对卷轴的监控；",
-	"团队框体快速施法现在支持鼠标上下滚轮；",
-	"法师/DH/术士职业助手调整；",
-	"拆解机现在也显示物品装等；",
-	"过滤海岛探险中的艾泽里特获取信息；",
-	"控制台及本地文本更新；",
-	"控制台添加姓名板的颜色调整选项；",
-	"姓名板添加指向高亮；",
-	"部分反馈的问题修正。",
+	"现在会自动将DBM显示的法术加到姓名板白名单中；",
+	"更新特殊目标染色列表；",
+	"添加Details的皮肤；",
+	"Skada皮肤微调；",
+	"更新oUF核心，调整竞技场框体的名字获取；",
+	"Alreadyknown调整，支持宠物的收集信息；",
+	"背包调整，修复英文语系下背包分类异常的问题；",
+	"暴雪框体的隐藏调整，防止污染；",
+	"控制台优化，团队框体减益和快速施法有了独立窗口。",
+	"部分选项调整为账号共享；",
+	"本地文本更新；",
+	"更新版本检测的逻辑。",
 }
 
 local f
@@ -65,7 +55,6 @@ end
 
 local function compareToShow(event)
 	if HelloWorld then return end
-	if not NDuiADB["Changelog"] then NDuiADB["Changelog"] = {} end
 
 	local old1, old2 = string.split(".", NDuiADB["Changelog"].Version or "")
 	local cur1, cur2 = string.split(".", DB.Version)

@@ -1,15 +1,12 @@
 ﻿local _, ns = ...
 local B, C, L, DB = unpack(ns)
-local AuraList, Aura, UnitIDTable, IntTable, IntCD, newTable = {}, {}, {}, {}, {}, {}
+local AuraList, Aura, UnitIDTable, IntTable, IntCD = {}, {}, {}, {}, {}
 local MaxFrame = 12	-- Max Tracked Auras
 
 -- Init
 local function ConvertTable()
-	if not NDuiDB["AuraWatchList"] then NDuiDB["AuraWatchList"] = {} end
-	if not NDuiDB["InternalCD"] then NDuiDB["InternalCD"] = {} end
-
 	local function DataAnalyze(v)
-		newTable = {}
+		local newTable = {}
 		if type(v[1]) == "number" then
 			newTable.IntID = v[1]
 			newTable.Duration = v[2]
@@ -17,18 +14,15 @@ local function ConvertTable()
 			newTable.UnitID = v[4]
 			newTable.ItemID = v[5]
 		else
-			if v[1] == "AuraID" then newTable.AuraID = v[2]
-			elseif v[1] == "SpellID" then newTable.SpellID = v[2]
-			elseif v[1] == "SlotID" then newTable.SlotID = v[2]
-			elseif v[1] == "TotemID" then newTable.TotemID = v[2]
-			end
+			newTable[v[1]] = v[2]
 			newTable.UnitID = v[3]
-			newTable.Caster = v[4] ~= nil and v[4] or false
-			newTable.Stack = v[5] ~= nil and v[5] or false
+			newTable.Caster = v[4]
+			newTable.Stack = v[5]
 			newTable.Value = v[6]
 			newTable.Timeless = v[7]
 			newTable.Combat = v[8]
 			newTable.Text = v[9]
+			newTable.Flash = v[10]
 		end
 
 		return newTable
@@ -57,6 +51,11 @@ local function ConvertTable()
 			wipe(target)
 		else
 			for _, v in pairs(myTable[index]) do
+				for _, list in pairs(target) do
+					if list.AuraID and v.AuraID and list.AuraID == v.AuraID then
+						wipe(list)
+					end
+				end
 				tinsert(target, v)
 			end
 		end
@@ -93,19 +92,6 @@ local function ConvertTable()
 	end
 end
 
-local function CheckAuraList()
-	for _, a in pairs(C.AuraWatchList) do
-		for _, b in pairs(a) do
-			for _, c in pairs(b.List) do
-				if c.AuraID then
-					local exists = GetSpellInfo(c.AuraID)
-					if not exists then print("|cffFF0000Invalid spellID:|r "..c.AuraID) end
-				end
-			end
-		end
-	end
-end
-
 local function BuildAuraList()
 	AuraList = C.AuraWatchList["ALL"] or {}
 	for class in pairs(C.AuraWatchList) do
@@ -137,7 +123,6 @@ local function MakeMoveHandle(Frame, Text, key, Pos)
 	MoveHandle:SetFrameStrata("HIGH")
 	B.CreateBD(MoveHandle)
 	B.CreateFS(MoveHandle, 12, Text)
-	if not NDuiDB["AuraWatchMover"] then NDuiDB["AuraWatchMover"] = {} end
 	if not NDuiDB["AuraWatchMover"][key] then 
 		MoveHandle:SetPoint(unpack(Pos))
 	else
@@ -180,6 +165,8 @@ local function BuildICON(iconSize)
 
 	Frame.Spellname = B.CreateFS(parentFrame, 13, "", false, "BOTTOM", 0, -3)
 	Frame.Count = B.CreateFS(parentFrame, iconSize*.55, "", false, "BOTTOMRIGHT", 6, -3)
+	Frame.glowFrame = B.CreateBG(Frame, 4)
+	Frame.glowFrame:SetFrameLevel(Frame:GetFrameLevel())
 
 	if not NDuiDB["AuraWatch"]["ClickThrough"] then
 		Frame:EnableMouse(true)
@@ -308,7 +295,6 @@ end
 
 local function Init()
 	ConvertTable()
-	CheckAuraList()
 	BuildAuraList()
 	BuildUnitIDTable()
 	BuildAura()
@@ -400,7 +386,9 @@ local function UpdateCD()
 end
 
 -- UpdateAura
-local function UpdateAuraFrame(index, UnitID, name, icon, count, duration, expires, id, filter)
+local function UpdateAuraFrame(index, UnitID, name, icon, count, duration, expires, id, filter, flash)
+	if not index then return end
+
 	local Frame = Aura[index][Aura[index].Index]
 	if Frame then Frame:Show() end
 	if Frame.Icon then Frame.Icon:SetTexture(icon) end
@@ -434,6 +422,13 @@ local function UpdateAuraFrame(index, UnitID, name, icon, count, duration, expir
 			end
 		end)
 	end
+	if Frame.glowFrame then
+		if flash then
+			ActionButton_ShowOverlayGlow(Frame.glowFrame)
+		else
+			ActionButton_HideOverlayGlow(Frame.glowFrame)
+		end
+	end
 	Frame.type = 4
 	Frame.unitID = UnitID
 	Frame.id = id
@@ -446,47 +441,26 @@ local function AuraFilter(spellID, UnitID, index, bool)
 	for KEY, VALUE in pairs(AuraList) do
 		for _, value in pairs(VALUE.List) do
 			if value.AuraID == spellID and value.UnitID == UnitID then
-				if bool then
-					local name, icon, count, _, duration, expires, caster, _, _, _, _, _, _, _, _, number = UnitBuff(value.UnitID, index)
-					if value.Combat and not InCombatLockdown() then return false end
-					if value.Caster and value.Caster:lower() ~= caster then return false end
-					if value.Stack and count and value.Stack > count then return false end
-					if value.Value and number then
-						if VALUE.Mode:lower() == "icon" then
-							name = B.Numb(number)
-						elseif VALUE.Mode:lower() == "bar" then
-							name = name..":"..B.Numb(number)
-						end
-					else
-						if VALUE.Mode:lower() == "icon" then
-							name = value.Text or nil
-						elseif VALUE.Mode:lower() == "bar" then
-							name = name
-						end
+				local filter = bool and "HELPFUL" or "HARMFUL"
+				local name, icon, count, _, duration, expires, caster, _, _, _, _, _, _, _, _, number = UnitAura(value.UnitID, index, filter)
+				if value.Combat and not InCombatLockdown() then return false end
+				if value.Caster and value.Caster:lower() ~= caster then return false end
+				if value.Stack and count and value.Stack > count then return false end
+				if value.Value and number then
+					if VALUE.Mode:lower() == "icon" then
+						name = B.Numb(number)
+					elseif VALUE.Mode:lower() == "bar" then
+						name = name..":"..B.Numb(number)
 					end
-					if value.Timeless then duration, expires = 0, 0 end
-					return KEY, value.UnitID, name, icon, count, duration, expires, index, "HELPFUL"
 				else
-					local name, icon, count, _, duration, expires, caster, _, _, _, _, _, _, _, _, number = UnitDebuff(value.UnitID, index)
-					if value.Combat and not InCombatLockdown() then return false end
-					if value.Caster and value.Caster:lower() ~= caster then return false end
-					if value.Stack and count and value.Stack > count then return false end
-					if value.Value and number then
-						if VALUE.Mode:lower() == "icon" then
-							name = B.Numb(number)
-						elseif VALUE.Mode:lower() == "bar" then
-							name = name..":"..B.Numb(number)
-						end
-					else
-						if VALUE.Mode:lower() == "icon" then
-							name = value.Text or nil
-						elseif VALUE.Mode:lower() == "bar" then
-							name = name
-						end
+					if VALUE.Mode:lower() == "icon" then
+						name = value.Text or nil
+					elseif VALUE.Mode:lower() == "bar" then
+						name = name
 					end
-					if value.Timeless then duration, expires = 0, 0 end
-					return KEY, value.UnitID, name, icon, count, duration, expires, index, "HARMFUL"
 				end
+				if value.Timeless then duration, expires = 0, 0 end
+				return KEY, value.UnitID, name, icon, count, duration, expires, index, filter, value.Flash
 			end
 		end
 	end
@@ -498,14 +472,15 @@ local function UpdateAura(UnitID)
     while true do
 		local name, _, _, _, _, _, _, _, _, spellID = UnitBuff(UnitID, index)
 		if not name then break end
-		if AuraFilter(spellID, UnitID, index, true) then UpdateAuraFrame(AuraFilter(spellID, UnitID, index, true)) end
+		UpdateAuraFrame(AuraFilter(spellID, UnitID, index, true))
 		index = index + 1
 	end
+
 	local index = 1
     while true do
 		local name, _, _, _, _, _, _, _, _, spellID = UnitDebuff(UnitID, index)
 		if not name then break end
-		if AuraFilter(spellID, UnitID, index, false) then UpdateAuraFrame(AuraFilter(spellID, UnitID, index, false)) end
+		UpdateAuraFrame(AuraFilter(spellID, UnitID, index, false))
 		index = index + 1
 	end
 end

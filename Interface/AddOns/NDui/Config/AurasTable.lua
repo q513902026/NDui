@@ -19,6 +19,21 @@ local groups = {
 -- AuraWatch
 local AuraWatchList = {}
 function module:AddNewAuraWatch(class, list)
+	for _, k in pairs(list) do
+		for _, v in pairs(k) do
+			local spellID = v.AuraID or v.SpellID
+			if spellID then
+				local name = GetSpellInfo(spellID)
+				if not name then
+					wipe(v)
+					if DB.isDeveloper then
+						print(format("|cffFF0000Invalid spellID:|r '%s' %s", class, spellID))
+					end
+				end
+			end
+		end
+	end
+
 	if class ~= "ALL" and class ~= DB.MyClass then return end
 	if not AuraWatchList[class] then AuraWatchList[class] = {} end
 
@@ -64,20 +79,19 @@ function module:RegisterDebuff(_, instID, _, spellID, level)
 end
 
 function module:OnLogin()
-	if not NDuiADB["RaidDebuffs"] then NDuiADB["RaidDebuffs"] = {} end
-	local newTable = {}
-	for _, value in pairs(NDuiADB["RaidDebuffs"]) do
-		if value then
-			local instName, spellID, priority = unpack(value)
-			if not newTable[instName] then newTable[instName] = {} end
-			newTable[instName][spellID] = priority
+	-- Wipe old stuff
+	for spellID in pairs(NDuiADB["RaidDebuffs"]) do
+		if spellID and tonumber(spellID) then
+			NDuiADB["RaidDebuffs"] = {}
+			break
 		end
 	end
-	B.CopyTable(newTable, RaidDebuffs)
+	if not next(NDuiADB["RaidDebuffs"]) then
+		B.CopyTable(RaidDebuffs, NDuiADB["RaidDebuffs"])
+	end
 
 	C.AuraWatchList = AuraWatchList
 	C.RaidBuffs = RaidBuffs
-	C.RaidDebuffs = RaidDebuffs
 
 	-- Filter bloodlust for healers
 	local bloodlustList = {57723, 57724, 80354, 264689}

@@ -1,0 +1,14 @@
+## Interface: 80000
+## X-Curse-Packaged-Version: v5.2.0
+## X-Curse-Project-Name: yClassColors
+## X-Curse-Project-ID: yclasscolors
+## X-Curse-Repository-ID: wow/yclasscolors/mainline
+
+## Title: yClassColors
+## Note: Colorize name by class!
+## Author: yleaf
+## Version: v5.2.0
+## OptionalDeps: !ClassColors
+
+yClassColors.xml
+
